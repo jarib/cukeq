@@ -114,7 +114,7 @@ module CukeQ
     end
 
     def start_webapp
-      @webapp.run &method(:run)
+      @webapp.run method(:run)
     end
 
   end # Master

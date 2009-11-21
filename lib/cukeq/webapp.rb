@@ -6,7 +6,7 @@ module CukeQ
       @uri = uri
     end
 
-    def run(&callback)
+    def run(callback)
       @callback = callback
       Rack::Handler::Thin.run(self, :Host => @uri.host, :Port => @uri.port)
     end
@@ -14,13 +14,15 @@ module CukeQ
     def call(env)
       log self.class, :called
 
-      if env['REQUEST_METHOD'] != 'POST'
+      request = Rack::Request.new(env)
+
+      unless request.post?
         return [405, {'Allow' => 'POST'}, '']
       end
 
       begin
-        data = JSON.parse(env['rack.input'].read)
-        @callback.call data if @callback
+        data = JSON.parse(request.body.read)
+        @callback.call(data) if @callback
       rescue JSON::ParserError
         return [406, {'Content-Type' => 'application/json'}, '']
       end
