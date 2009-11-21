@@ -17,17 +17,17 @@ module CukeQ
       request = Rack::Request.new(env)
 
       unless request.post?
-        return [405, {'Allow' => 'POST'}, '']
+        return [405, {'Allow' => 'POST'}, []]
       end
 
       begin
         data = JSON.parse(request.body.read)
         @callback.call(data) if @callback
       rescue JSON::ParserError
-        return [406, {'Content-Type' => 'application/json'}, '']
+        return [406, {'Content-Type' => 'application/json'}, []]
       end
 
-      [202, {}, 'ok']
+      [202, {}, %w[ok]]
     end
 
   end # App

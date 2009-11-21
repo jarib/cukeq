@@ -3,6 +3,7 @@ require "mq"
 require "rack/handler/thin"
 require "json"
 
+require "uri"
 require "pp"
 require "optparse"
 

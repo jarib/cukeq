@@ -18,6 +18,7 @@ begin
     g.add_development_dependency "rspec", ">= 1.2.9"
     g.add_development_dependency "yard", ">= 0"
     g.add_development_dependency "cucumber", ">= 0"
+    g.add_development_dependency "rack-test", ">= 0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

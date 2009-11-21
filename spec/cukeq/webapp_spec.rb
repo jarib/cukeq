@@ -1,6 +1,5 @@
 require "#{File.dirname(__FILE__)}/../spec_helper"
-require "rack/test"
-require "ruby-debug"
+
 describe CukeQ::WebApp do
   include Rack::Test::Methods
 
