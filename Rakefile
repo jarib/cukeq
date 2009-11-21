@@ -10,6 +10,8 @@ begin
     g.email       = "jari.bakken@gmail.com"
     g.homepage    = "http://github.com/jarib/cukeq"
     g.authors     = ["Jari Bakken"]
+    g.bindir      = 'bin'
+    g.executables = Dir['bin/*'].map { |f| File.basename(f) }
 
     g.add_dependency "amqp"
     g.add_dependency "thin"
