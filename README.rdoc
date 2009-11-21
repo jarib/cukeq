@@ -1,5 +1,7 @@
 = cukeq
 
+This code is not in a usable state yet, contributions welcome!
+
 This project will some time in the future provide a simple way of distributing
 Cucumber features across machines and collect the results.
 
