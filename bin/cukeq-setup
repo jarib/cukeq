@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+puts `rabbitmqctl add_vhost /cukeq`
+
+# create users with password 'cukeq123'
+%w[cukeq-master cukeq-slave].each do |user|
+  puts `rabbitmqctl add_user #{user} cukeq123`
+  # puts `rabbitmqctl map_user_vhost #{user} /cukeq`
+
+  # the three regex's map to config, write, read permissions respectively
+  puts `rabbitmqctl set_permissions -p /cukeq #{user} ".*" ".*" ".*"`
+end
+
+puts `rabbitmqctl list_users`
+puts `rabbitmqctl list_vhosts`
+puts `rabbitmqctl list_permissions -p /cukeq`

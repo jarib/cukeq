@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+CukeQ::Slave.execute(ARGV.dup)

@@ -3,17 +3,21 @@ require 'rake'
 
 begin
   require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "cukeq"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "jari.bakken@gmail.com"
-    gem.homepage = "http://github.com/jarib/cukeq"
-    gem.authors = ["Jari Bakken"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency "yard", ">= 0"
-    gem.add_development_dependency "cucumber", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  Jeweler::Tasks.new do |g|
+    g.name        = "cukeq"
+    g.summary     = %Q{Distributed cucumbers}
+    g.description = %Q{Cucumber features distributed using AMQP.}
+    g.email       = "jari.bakken@gmail.com"
+    g.homepage    = "http://github.com/jarib/cukeq"
+    g.authors     = ["Jari Bakken"]
+
+    g.add_dependency "amqp"
+    g.add_dependency "thin"
+    g.add_dependency "json"
+
+    g.add_development_dependency "rspec", ">= 1.2.9"
+    g.add_development_dependency "yard", ">= 0"
+    g.add_development_dependency "cucumber", ">= 0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
