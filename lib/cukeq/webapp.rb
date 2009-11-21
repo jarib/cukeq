@@ -1,18 +1,26 @@
 module CukeQ
-  class App
+  class WebApp
+    attr_reader :uri
 
-    def initialize(master)
-      @master = master
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def run(&callback)
+      @callback = callback
+      Rack::Handler::Thin.run(self, :Host => @uri.host, :Port => @uri.port)
     end
 
     def call(env)
+      log self.class, :called
+
       if env['REQUEST_METHOD'] != 'POST'
         return [405, {'Allow' => 'POST'}, '']
       end
 
       begin
         data = JSON.parse(env['rack.input'].read)
-        @master.process(data)
+        @callback.call data if @callback
       rescue JSON::ParserError
         return [406, {'Content-Type' => 'application/json'}, '']
       end

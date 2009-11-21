@@ -1,66 +1,77 @@
 module CukeQ
   class Slave
+    DEFAULT_BROKER_URI = URI.parse("amqp://cukeq-slave:cukeq123@localhost:5672/cukeq")
 
-    def self.execute(argv)
-      opts = parse(argv)
-      new(
-        opts[:host] || 'localhost',
-        opts[:port] || 5672,
-        opts[:user] || 'cukeq-slave',
-        opts[:pass] || 'cukeq123'
-      ).run
-    end
+    class << self
+      def execute(argv)
+        configured_instance(argv).start
+      end
 
-    def self.parse(argv)
-      options = {}
+      def configured_instance(argv)
+        opts = parse(argv)
 
-      argv.extend(OptionParser::Arguable)
-      argv.options do |opts|
-        opts.on("-b", "--broker HOST:PORT") do |b|
-          host, port = b.split(":", 2)
-          options[:host] = host || 'localhost'
-          options[:port] = port || 5672
+        if b = opts[:broker]
+          b.user     ||= DEFAULT_BROKER_URI.user
+          b.password ||= DEFAULT_BROKER_URI.password
+          b.host     ||= DEFAULT_BROKER_URI.host
+          b.port     ||= DEFAULT_BROKER_URI.port
+          b.path     = b.path.empty? ? DEFAULT_BROKER_URI.path : b.path
+        else
+          opts[:broker] = DEFAULT_BROKER_URI
         end
 
-        opts.on("-u", "--user USER") { |u| options[:user] = u }
-        opts.on("-p", "--password PASS") { |p| options[:pass] = p }
-      end.parse!
+        new(
+          Broker.new(opts[:broker]),
+          ScenarioRunner.new
+        )
+      end
 
-      options
+      def parse(argv)
+        options = {}
+
+        argv.extend(OptionParser::Arguable)
+        argv.options do |opts|
+          opts.on("-b", "--broker URI (default: #{DEFAULT_BROKER_URI})") do |b|
+            options[:broker] = URI.parse(b)
+          end
+
+        end.parse!
+
+        options
+      end
+    end # class << self
+
+    attr_reader :broker, :scenario_runner
+
+    def initialize(broker, scenario_runner)
+      @broker          = broker
+      @scenario_runner = scenario_runner
     end
 
-    def initialize(host, port, user, pass)
-      @host = host
-      @port = Integer(port)
-      @user = user
-      @pass = pass
+    def start
+      @broker.start { subscribe }
     end
 
     def job(message)
-      p :new_job => message
-      # process job here, then:
-      @result_queue.publish("I received #{message.inspect}")
+      log self.class, :job, message
+      @scenario_runner.run(message) { |result| publish(result) }
     end
 
-    def run
-      p :started => amqp_options
-      AMQP.start(amqp_options) do
-        @result_queue = MQ.new.queue("cukeq.results")
-        @job_queue    = MQ.new.queue("cukeq.jobs")
+    #
+    # Publish a message on the results queue
+    #
 
-        @job_queue.subscribe &method(:job)
+    def publish(message)
+      log self.class, :publish, message
+      # might need to process the message here?
+      @broker.publish :results, message
+    end
+
+    def subscribe
+      @broker.subscribe :jobs do |message|
+        job JSON.parse(message)
       end
     end
 
-    def amqp_options
-      {
-        :host    => @host,
-        :port    => @port,
-        :user    => @user,
-        :pass    => @pass,
-        :vhost   => '/cukeq',
-        :timeout => 20
-      }
-    end
   end # Slave
 end # CukeQ

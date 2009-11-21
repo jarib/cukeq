@@ -1,21 +1,21 @@
 module CukeQ
   class Reporter
-    attr_reader :url
+    attr_reader :uri
 
-    def initialize(url)
-      @url = URI.parse(url)
+    def initialize(uri)
+      @uri = uri
     end
 
     def report(message)
       EM::P::HttpClient.request(
-        :host    => @url.host,
-        :port    => @url.port,
+        :host    => @uri.host,
+        :port    => @uri.port,
         :verb    => "POST",
-        :request => @url.path.empty? ? "/" : @url.path,
-        :content => message
+        :request => @uri.path.empty? ? "/" : @uri.path,
+        :content => message.to_json
       )
     rescue => e # EM raises a RuntimeError..
-      $stderr.puts "error for #{@url}: #{e.message}"
+      log self.class, "error for #{@url}: #{e.message}"
     end
 
   end # Reporter
