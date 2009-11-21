@@ -30,8 +30,8 @@ module CukeQ
       queue_for(queue_name).publish(json)
     end
 
-    def subscribe(queue, &blk)
-      log self.class, :publish, queue_name
+    def subscribe(queue_name, &blk)
+      log self.class, :subscribe, queue_name
       queue_for(queue_name).subscribe(&blk)
     end
 
