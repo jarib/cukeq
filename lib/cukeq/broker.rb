@@ -17,16 +17,13 @@ module CukeQ
       log self.class, :start, amqp_options
 
       AMQP.start(amqp_options) do
-        @queues[:results] = MQ.new.queue("cukeq.results")
-        @queues[:jobs]    = MQ.new.queue("cukeq.jobs")
-
-        yield
+        create_queues
+        yield if block_given?
       end
     end
 
     def publish(queue_name, json)
-      log self.class, :publish, queue_name, object
-
+      log self.class, :publish, queue_name, json
       queue_for(queue_name).publish(json)
     end
 
@@ -45,6 +42,11 @@ module CukeQ
     end
 
     private
+
+    def create_queues
+      @queues[:results] = MQ.new.queue("cukeq.results")
+      @queues[:jobs]    = MQ.new.queue("cukeq.jobs")
+    end
 
     def amqp_options
       {
