@@ -1,16 +1,55 @@
 = cukeq
 
-Description goes here.
+This project will some time in the future provide a simple way of distributing
+Cucumber features across machines and collect the results.
+
+= Dependencies
+
+You need to have a message broker (like RabbitMQ installed):
+
+  $ brew install rabbitmq
+  $ bin/cukeq-setup
+
+= Interface
+
+  $ cukeq-master --broker URI --report-to URI --scm URI
+  $ cukeq-slave --broker URI
+
+= Master
+
+1. REST service to trigger runs, payload:
+  {:features => ["file:line", "file:line", ...]}
+2. Update from SCM.
+3. Call Cucumber to get «exploded scenarios» (JSON) - (shell out to cucumber with custom formatter + --dry-run ??).
+4. Create JSON payload
+  {:run_id => id, :scm_revision => rev, :exploded_scenarios => [...]} (probably more..)
+5. Put payload on jobs queue.
+6. Pull step result from result queue.
+7. POST step result to --report-to URL, and/or let several reporters register themselves with the Master webapp (webhookish)
+
+= Slave
+
+1. Pull job from job queue.
+2. If job revision != last revision
+    * Update/checkout from SCM.
+    * Restart Cucumber process with updated code files.
+3. Invoke steps (through wire protocol?)
+4. Put step result on result queue.
+
+= Other
+
+- Need a (separate?) webapp to select which features to run and show the results as the step results come in. (a --report-to recipient)
+- Should also be able to trigger runs from command line (`cukeq-runner file:line file:line`, prints `http://app/runs/«run id»`)
+
 
 == Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but
-   bump version in a commit by itself I can ignore when I pull)
+  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright
