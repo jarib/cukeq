@@ -5,7 +5,7 @@ Cucumber features across machines and collect the results.
 
 = Dependencies
 
-You need to have a message broker (like RabbitMQ installed):
+You need to have an AMQP broker (like RabbitMQ installed):
 
   $ brew install rabbitmq
   $ bin/cukeq-setup
