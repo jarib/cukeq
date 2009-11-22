@@ -36,10 +36,12 @@ You need to have an AMQP broker (like RabbitMQ installed):
     * Update/checkout from SCM.
     * Restart Cucumber process with updated code files.
 3. Invoke steps (through wire protocol?)
-4. Put step result on result queue.
+4. Put step/scenario/unit (undecided) result on result queue.
 
 = Other
 
+- All parsing is done on the master - the slave shouldn't have to parse .feature files.
+- The slave should be able to invoke cucumber steps implemented in any of the supported languages
 - Need a (separate?) webapp to select which features to run and show the results as the step results come in. (a --report-to recipient)
 - Should also be able to trigger runs from command line (`cukeq-runner file:line file:line`, prints `http://app/runs/«run id»`)
 
