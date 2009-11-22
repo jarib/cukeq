@@ -67,7 +67,7 @@ describe CukeQ::Slave do
       result = {:some => 'result'}
 
       slave.scenario_runner.should_receive(:run).with(job).and_yield(result)
-      slave.should_receive(:publish).with(result)
+      slave.should_receive(:publish).with(result.to_json)
 
       slave.job(job)
     end
