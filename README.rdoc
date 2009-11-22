@@ -24,7 +24,14 @@ You need to have an AMQP broker (like RabbitMQ installed):
 2. Update from SCM.
 3. Call Cucumber to get «exploded scenarios» (JSON) - (shell out to cucumber with custom formatter + --dry-run ??).
 4. Create JSON payload
-  {:run_id => id, :scm_revision => rev, :exploded_scenarios => [...]} (probably more..)
+  [
+    {
+      :run_id => id,
+      :scm    => {:revision => 1234, :url => "git://..."}
+      :exploded_scenario => ast(?)
+    },
+  ...
+  ]
 5. Put payload on jobs queue.
 6. Pull step result from result queue.
 7. POST step result to --report-to URL, and/or let several reporters register themselves with the Master webapp (webhookish)
