@@ -90,8 +90,27 @@ describe CukeQ::Master do
       jobs   = %w[job1 job2 job3 job4]
       master = running_master
 
-      master.exploder.should_receive(:explode).and_return(jobs)
-      master.broker.should_receive(:publish).exactly(4).times # TODO: how to specify the args?
+      master.exploder.stub!(:explode).and_return(jobs)
+      master.broker.should_receive(:publish).exactly(4).times
+
+      master.run(nil)
+    end
+
+    it "adds a run_id and scm info to the job payload" do
+      jobs = ["job1"]
+      master = running_master
+
+      master.exploder.stub!(:explode).and_return(jobs)
+      master.scm.stub!(:current_revision).and_return("abadbabe")
+      master.scm.stub!(:url).and_return("git://github.com/jarib/cukeq.git")
+
+      master.broker.should_receive(:publish).with do |queue, json|
+        payload = JSON.parse(json)
+
+        payload['scm']['revision'].should == "abadbabe"
+        payload['scm']['url'].should == "git://github.com/jarib/cukeq.git"
+        payload['run_id'].should == 1
+      end
 
       master.run(nil)
     end

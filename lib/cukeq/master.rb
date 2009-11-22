@@ -91,12 +91,19 @@ module CukeQ
       log self.class, :run, data
 
       @scm.update
-      jobs = Dir.chdir(@scm.working_copy) do
+      scm = {:revision => @scm.current_revision, :url => @scm.url }
+
+      units = Dir.chdir(@scm.working_copy) do
         @exploder.explode(data)
       end
 
-      jobs.each do |job|
-        @broker.publish(:jobs, job)
+      run_id = next_run_id()
+
+      units.each do |unit|
+        @broker.publish(:jobs, { :run_id => run_id,
+                                 :scm    => scm,
+                                 :unit   => unit    }.to_json
+        )
       end
     end
 
@@ -118,6 +125,12 @@ module CukeQ
 
     def start_webapp
       @webapp.run method(:run)
+    end
+
+    def next_run_id
+      (@run_id ||= 0)
+
+      @run_id += 1
     end
 
   end # Master

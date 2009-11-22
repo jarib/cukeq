@@ -20,8 +20,7 @@ describe CukeQ::Scm do
   end
 
   it "replaces special characters in the working copy dir" do
-    scm(:git).working_copy.should =~ %r[cukeq/repos/git_github_com_jarib_cukeq_git]
-    scm(:svn).working_copy.should =~ %r[cukeq/repos/svn_example_com_somerepo_trunk]
+    scm(:git).working_copy.should !~ /[^A-z]/
   end
 
   it "creates the correct bridge" do

@@ -8,11 +8,11 @@ module CukeQ
     ROOT = File.expand_path("~/.cukeq")
 
     def initialize(url)
-      @url = url
+      @url = url.kind_of?(String) ? URI.parse(url) : url
     end
 
     def working_copy
-      @working_copy ||= "#{ROOT}/repos/#{url.gsub(/[^A-z]+/, '_')}"
+      @working_copy ||= "#{ROOT}/repos/#{url.host}/#{url.path.gsub(/[^A-z]+/, '_')}"
     end
 
     def current_revision
@@ -25,13 +25,13 @@ module CukeQ
 
     def bridge
       @bridge ||= begin
-        case @url
-        when %r[git.*://]
+        case url.scheme
+        when /git/
           GitBridge.new url, working_copy
-        when %r[svn.*://]
+        when /svn/
           SvnBridge.new url, working_copy
         else
-          raise "unknown scm: #{url.inspect}"
+          raise "unknown scm: #{url}"
         end
       end
     end

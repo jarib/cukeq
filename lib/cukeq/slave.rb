@@ -54,7 +54,7 @@ module CukeQ
 
     def job(message)
       log self.class, :job, message
-      @scenario_runner.run(message) { |result| publish(result) }
+      @scenario_runner.run(message) { |result| publish(result.to_json) }
     end
 
     #
