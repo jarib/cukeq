@@ -3,11 +3,11 @@ module CukeQ
     DEFAULT_BROKER_URI = URI.parse("amqp://cukeq-slave:cukeq123@localhost:5672/cukeq")
 
     class << self
-      def execute(argv)
+      def execute(argv = [])
         configured_instance(argv).start
       end
 
-      def configured_instance(argv)
+      def configured_instance(argv = [])
         opts = parse(argv)
 
         if b = opts[:broker]

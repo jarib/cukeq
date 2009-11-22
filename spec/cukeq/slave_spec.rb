@@ -18,7 +18,7 @@ describe CukeQ::Slave do
 
   describe ".configured_instance" do
     it "sets up defaults if --broker is not given" do
-      slave = CukeQ::Slave.configured_instance([])
+      slave = CukeQ::Slave.configured_instance
 
       slave.broker.host.should == 'localhost'
       slave.broker.port.should == 5672
