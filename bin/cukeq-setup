@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# TODO - make password configurable
+
 puts `rabbitmqctl add_vhost /cukeq`
 
 # create users with password 'cukeq123'

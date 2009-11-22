@@ -14,6 +14,7 @@ begin
     g.add_dependency "amqp"
     g.add_dependency "thin"
     g.add_dependency "json"
+    g.add_dependency "git"
 
     g.add_development_dependency "rspec", ">= 1.2.9"
     g.add_development_dependency "yard", ">= 0"

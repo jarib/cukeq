@@ -8,14 +8,14 @@ module CukeQ
 
     def report(message)
       EM::P::HttpClient.request(
-        :host    => @uri.host,
-        :port    => @uri.port,
+        :host    => uri.host,
+        :port    => uri.port,
         :verb    => "POST",
-        :request => @uri.path.empty? ? "/" : @uri.path,
+        :request => uri.path.empty? ? "/" : uri.path,
         :content => message.to_json
       )
     rescue => e # EM raises a RuntimeError..
-      log self.class, "error for #{@url}: #{e.message}"
+      log self.class, "error for #{uri}: #{e.message}"
     end
 
   end # Reporter

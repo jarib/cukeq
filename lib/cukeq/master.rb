@@ -90,8 +90,11 @@ module CukeQ
     def run(data)
       log self.class, :run, data
 
-      # TODO: scm stuff
-      jobs = @exploder.explode(data)
+      @scm.update
+      jobs = Dir.chdir(@scm.working_copy) do
+        @exploder.explode(data)
+      end
+
       jobs.each do |job|
         @broker.publish(:jobs, job)
       end

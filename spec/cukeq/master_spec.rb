@@ -5,7 +5,7 @@ describe CukeQ::Master do
     CukeQ::Master.new(
       mock("CukeQ::Broker",   :null_object => true),
       mock("CukeQ::WebApp",   :null_object => true),
-      mock("CukeQ::Scm",      :null_object => true),
+      mock("CukeQ::Scm",      :null_object => true, :working_copy => "."),
       mock("CukeQ::Reporter", :null_object => true),
       mock("CukeQ::Exploder", :null_object => true)
     )
