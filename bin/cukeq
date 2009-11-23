@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'cukeq'
+
+case ARGV.shift
+when 'slave'
+  CukeQ::Slave.execute(ARGV.dup)
+when 'master'
+  CukeQ::Master.execute(ARGV.dup)
+when 'runner'
+  CukeQ::Runner.execute(ARGV.dup)
+when 'setup'
+  # TODO - make password configurable
+
+  puts `rabbitmqctl add_vhost /cukeq`
+
+  # create users with password 'cukeq123'
+  %w[cukeq-master cukeq-slave].each do |user|
+    puts `rabbitmqctl add_user #{user} cukeq123`
+    # puts `rabbitmqctl map_user_vhost #{user} /cukeq`
+
+    # the three regex's map to config, write, read permissions respectively
+    puts `rabbitmqctl set_permissions -p /cukeq #{user} ".*" ".*" ".*"`
+  end
+
+  puts `rabbitmqctl list_users`
+  puts `rabbitmqctl list_vhosts`
+  puts `rabbitmqctl list_permissions -p /cukeq`
+else
+  abort "USAGE: #{File.basename $0} [slave|master|runner|setup]"
+end

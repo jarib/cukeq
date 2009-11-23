@@ -10,12 +10,12 @@ Cucumber features across machines and collect the results.
 You need to have an AMQP broker (like RabbitMQ installed):
 
   $ brew install rabbitmq
-  $ bin/cukeq-setup
+  $ ruby -rubygems bin/cukeq setup
 
 = Interface
 
-  $ cukeq-master --broker URI --report-to URI --scm URI
-  $ cukeq-slave --broker URI
+  $ cukeq master --broker URI --report-to URI --scm URI
+  $ cukeq slave --broker URI
 
 = Master
 
