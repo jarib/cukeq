@@ -14,7 +14,7 @@ module CukeQ
     end
 
     def start
-      log self.class, :start, amqp_options
+      log self.class, :start, "#{@host}:#{@port}#{@vhost}"
 
       AMQP.start(amqp_options) do
         create_queues
@@ -23,17 +23,14 @@ module CukeQ
     end
 
     def publish(queue_name, json)
-      log self.class, :publish, queue_name, json
       queue_for(queue_name).publish(json)
     end
 
     def subscribe(queue_name, &blk)
-      log self.class, :subscribe, queue_name
       queue_for(queue_name).subscribe(&blk)
     end
 
     def unsubscribe(queue_name, &blk)
-      log self.class, :unsubscribe, queue_name
       queue_for(queue_name).unsubscribe(&blk)
     end
 
