@@ -1,4 +1,4 @@
-require "restclient"
+require "net/http"
 
 module CukeQHelper
 
