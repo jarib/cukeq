@@ -1,32 +1,64 @@
+require "tmpdir"
+require "fileutils"
+
 module CukeQ
   class ScenarioRunner
 
     def run(job, &callback)
-      new_scm job.fetch(:scm)
+      # return yield(job) # FIXME: `rake features` expects this
+      scm = scm_for job
 
-      if job_revision != @scm.current_revision
-        update_and_restart
-        @last_revision = job_revision
+      Dir.chdir(scm.working_copy) do
+        yield result_for(job)
+      end
+    end
+
+    def scm_for(job)
+      url = job['scm']['url']
+      rev = job['scm']['revision']
+
+      scm = Scm.new(url)
+      unless scm.current_revision == rev
+        scm.update
       end
 
-      # TODO: run cucumber
-      #
-      # Run the exploded scenario job and report each step result using callback.call()
-
-      # for now, just yield the job arg
-      yield job
-    rescue => e
-      # errors here should be reported as a result
+      scm
     end
 
-    def update_and_restart
-      @scm.update
-      # TODO: restart cucumber
+    def result_for(job)
+      returned = {:success => true}
+
+      begin
+        feature_file = job['unit']['file']
+        run_id       = job['run_id']
+
+        run_pre_run_if_necessary(job)
+
+        returned.merge!(:feature_file => feature_file, :run_id => run_id)
+
+        tmp_dir      = Dir.mktmpdir("runid#{run_id}")
+
+        output  = %x[ruby script/cuke --format junit --out #{tmp_dir} #{feature_file} 2>&1]
+        success = $?.success?
+        results = Dir[File.join(tmp_dir, '*.xml')].map { |file| File.read(file) }
+
+        returned.merge(:output => output, :success => success, :results => results)
+      rescue => e
+        returned.merge(:success => false, :error => e.message, :backtrace => e.backtrace)
+      ensure
+        FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
+      end
     end
 
-    def new_scm(info)
-      @scm              = Scm.new info[:url]
-      @current_revision = info.fetch(:revision)
+    def run_pre_run_if_necessary(job)
+      cmd = job['pre_run_command']
+      return unless cmd
+
+      output = %x[#{cmd} 2>&1]
+
+      unless $?.success?
+        raise "pre-run command failed with status #{$?.exitstatus}\n#{output}"
+      end
     end
 
   end # ScenarioRunner

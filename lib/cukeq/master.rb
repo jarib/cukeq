@@ -79,6 +79,8 @@ module CukeQ
     end
 
     def start
+      @scm.update
+
       @broker.start do
         subscribe
         start_webapp
@@ -92,7 +94,6 @@ module CukeQ
     def run(data)
       log self.class, :run, data
 
-      @scm.update
       scm = {:revision => @scm.current_revision, :url => @scm.url }
 
       units = Dir.chdir(@scm.working_copy) do
@@ -102,9 +103,13 @@ module CukeQ
       run_id = next_run_id()
 
       units.each do |unit|
-        @broker.publish(:jobs, { :run_id => run_id,
-                                 :scm    => scm,
-                                 :unit   => unit    }.to_json
+        @broker.publish(
+          :jobs, {
+            :run_id          => run_id,
+            :scm             => scm,
+            :unit            => unit,
+            :pre_run_command => "gem bundle; echo 'webdriver.enabled = true' > config/user.prop" # HACK!
+          }.to_json
         )
       end
     end

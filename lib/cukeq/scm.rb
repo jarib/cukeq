@@ -20,7 +20,9 @@ module CukeQ
     end
 
     def update
+      log self.class, :updating, url.to_s => working_copy
       bridge.update
+      log self.class, :done
     end
 
     def bridge
