@@ -13,7 +13,7 @@ Given /^I POST the following list to the master web service:$/ do |table|
 end
 
 Then /^the report app should know when the run has finished$/ do
-  sleep 2 # heh.
+  sleep 5 # heh.
 end
 
 Then /^I should be able to GET the results$/ do

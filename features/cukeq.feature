@@ -9,7 +9,7 @@ Feature: Distributed cucumber
 
   Scenario: Distribute 2 features
     When I POST the following list to the master web service:
-      | feature/example1.feature |
-      | feature/example2.feature |
+      | features/example1.feature |
+      | features/example2.feature |
     Then the report app should know when the run has finished
     And I should be able to GET the results

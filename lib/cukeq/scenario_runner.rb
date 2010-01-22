@@ -42,9 +42,9 @@ module CukeQ
         success = $?.success?
         results = Dir[File.join(tmp_dir, '*.xml')].map { |file| File.read(file) }
 
-        returned.merge(:output => output, :success => success, :results => results)
+        returned.merge(:output => output, :success => success, :results => results, :cwd => Dir.pwd)
       rescue => e
-        returned.merge(:success => false, :error => e.message, :backtrace => e.backtrace)
+        returned.merge(:success => false, :error => e.message, :backtrace => e.backtrace, :cwd => Dir.pwd)
       ensure
         FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
       end
