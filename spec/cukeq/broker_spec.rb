@@ -43,14 +43,12 @@ describe CukeQ::Broker do
   end
   
   it "should subscribe/unsubscribe from the given queue" do
+    EM.stub(:add_periodic_timer)
     broker = running_broker
     
     # TODO: this looks pretty stupid, could we just expose the queues directly? 
-    queues[:results].should_receive(:subscribe)
+    queues[:results].should_receive(:pop)
     broker.subscribe(:results) {}
-
-    queues[:results].should_receive(:unsubscribe)
-    broker.unsubscribe(:results) {}
   end
   
   describe "#queue_for" do

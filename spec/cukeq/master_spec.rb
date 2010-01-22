@@ -67,8 +67,10 @@ describe CukeQ::Master do
   end
 
   describe "#start" do
-    it "subscribes to the results queue and runs the webapp" do
-      master = CukeQ::Master.new(mock("CukeQ::Broker"), mock("CukeQ::WebApp"), nil, nil, nil)
+    it "updates, subscribes to the results queue and runs the webapp" do
+      master = CukeQ::Master.new(mock("CukeQ::Broker"), mock("CukeQ::WebApp"), mock("CukeQ::Scm"), nil, nil)
+      
+      master.scm.should_receive(:update)
       master.broker.should_receive(:start).and_yield
       master.should_receive(:subscribe)
       master.webapp.should_receive(:run)
