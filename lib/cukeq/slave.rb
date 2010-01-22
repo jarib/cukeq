@@ -54,7 +54,7 @@ module CukeQ
 
     def job(message)
       log log_name, :job, message
-      @scenario_runner.run(message) { |result| publish(result.to_json) }
+      @scenario_runner.run(message) { |result| publish(result) }
     end
 
     #
@@ -63,8 +63,7 @@ module CukeQ
 
     def publish(message)
       log log_name, :publish, message
-      # might need to process the message here?
-      @broker.publish :results, message
+      @broker.publish :results, message.to_json
     end
 
     def subscribe

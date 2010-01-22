@@ -36,7 +36,7 @@ module CukeQ
 
         returned.merge!(:feature_file => feature_file, :run_id => run_id)
 
-        tmp_dir      = Dir.mktmpdir("runid#{run_id}")
+        tmp_dir      = Dir.mktmpdir("#{CukeQ.identifier}-#{run_id}")
 
         output  = %x[cucumber -rfeatures --format junit --out #{tmp_dir} #{feature_file} 2>&1]
         success = $?.success?
@@ -52,7 +52,9 @@ module CukeQ
 
     def run_pre_run_if_necessary(job)
       cmd = job['pre_run_command']
-      return unless cmd
+
+      return if cmd.nil?
+      # TODO: only run if revision has changed since last run
 
       output = %x[#{cmd} 2>&1]
 
