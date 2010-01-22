@@ -99,13 +99,14 @@ module CukeQ
       end
 
       run_id = next_run_id()
+      run = {:id => run_id, :no_of_units => units.size}
 
       units.each do |unit|
         @broker.publish(
           :jobs, {
-            :run_id          => run_id,
-            :scm             => scm,
-            :unit            => unit,
+            :run         => run,
+            :scm         => scm,
+            :unit        => unit,
             # :pre_run_command => "gem bundle; echo 'webdriver.enabled = true' > config/user.prop" # HACK!
           }.to_json
         )

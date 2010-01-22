@@ -29,14 +29,13 @@ module CukeQ
       returned = {:success => true, :slave => CukeQ.identifier}
 
       begin
-        feature_file = job['unit']['file']
-        run_id       = job['run_id']
-
         run_pre_run_if_necessary(job)
 
-        returned.merge!(:feature_file => feature_file, :run_id => run_id)
+        feature_file = job['unit']['file']
+        run          = job['run']
+        returned.merge!(:feature_file => feature_file, :run => run)
 
-        tmp_dir      = Dir.mktmpdir("#{CukeQ.identifier}-#{run_id}")
+        tmp_dir      = Dir.mktmpdir("#{CukeQ.identifier}-#{run['id']}")
 
         output  = %x[cucumber -rfeatures --format junit --out #{tmp_dir} #{feature_file} 2>&1]
         success = $?.success?

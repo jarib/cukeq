@@ -69,7 +69,7 @@ describe CukeQ::Master do
   describe "#start" do
     it "updates, subscribes to the results queue and runs the webapp" do
       master = CukeQ::Master.new(mock("CukeQ::Broker"), mock("CukeQ::WebApp"), mock("CukeQ::Scm"), nil, nil)
-      
+
       master.scm.should_receive(:update)
       master.broker.should_receive(:start).and_yield
       master.should_receive(:subscribe)
@@ -111,7 +111,8 @@ describe CukeQ::Master do
 
         payload['scm']['revision'].should == "abadbabe"
         payload['scm']['url'].should == "git://github.com/jarib/cukeq.git"
-        payload['run_id'].should == 1
+        payload['run']['id'].should == 1
+        payload['run']['no_of_units'].should == 1
       end
 
       master.run(nil)
