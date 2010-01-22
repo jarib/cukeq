@@ -1,7 +1,7 @@
 module CukeQ
   class Master
     DEFAULT_BROKER_URI = URI.parse("amqp://cukeq-master:cukeq123@localhost:5672/cukeq")
-    DEFAULT_WEBAPP_URI = URI.parse("http://localhost:9292")
+    DEFAULT_WEBAPP_URI = URI.parse("http://0.0.0.0:9292")
 
     class << self
       def execute(argv)
