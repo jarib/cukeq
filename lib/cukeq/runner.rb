@@ -7,33 +7,27 @@ module CukeQ
       opts = parse(args)
       uri = opts[:uri]
 
-      Dir.chdir(opts[:dir]) do |dir|
-        message = Dir[File.join(dir, "features/**/*.feature")].map do |f|
-          f.gsub(%r[#{dir}/?], '')
+      EM.run {
+        http = EM::P::HttpClient.request(
+          :host    => uri.host,
+          :port    => uri.port,
+          :verb    => "POST",
+          :request => uri.path.empty? ? "/" : uri.path,
+          :content => options[:features].to_json
+        )
+
+        http.callback do |response|
+          log :success, message,
+          EM.stop
         end
-        EM.run {
-          http = EM::P::HttpClient.request(
-            :host    => uri.host,
-            :port    => uri.port,
-            :verb    => "POST",
-            :request => uri.path.empty? ? "/" : uri.path,
-            :content => message.to_json
-          )
 
-          http.callback do |response|
-            log :success, message,
-            EM.stop
-          end
+        http.errback do |error|
+          log :error, error[:status], uri.to_s
 
-          http.errback do |error|
-            log :error, error[:status], uri.to_s
+          EM.stop
+        end
 
-            EM.stop
-          end
-
-        }
-
-      end
+      }
     end
 
     private
@@ -48,7 +42,11 @@ module CukeQ
         end
       end.parse!
 
-      options[:dir] =  argv.shift || raise("must provide scm directory")
+      if argv.empty?
+        raise "must provide list of features"
+      end
+
+      options[:features] = argv
 
       options
     end
