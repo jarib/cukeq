@@ -67,7 +67,7 @@ describe CukeQ::Slave do
       result = {:some => 'result'}
 
       slave.scenario_runner.should_receive(:run).with(job).and_yield(result)
-      slave.should_receive(:publish).with(result.to_json)
+      slave.should_receive(:publish).with(result)
 
       slave.job(job)
     end
@@ -78,7 +78,7 @@ describe CukeQ::Slave do
       slave = running_slave
       message = "some message"
 
-      slave.broker.should_receive(:publish).with(:results, message)
+      slave.broker.should_receive(:publish).with(:results, message.to_json)
       slave.publish(message)
     end
   end

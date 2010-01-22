@@ -49,7 +49,7 @@ describe CukeQ::Master do
         %w[-s git://example.com -r http://cukereports.com]
       )
 
-      master.webapp.uri.host.should == 'localhost'
+      master.webapp.uri.host.should == '0.0.0.0'
       master.webapp.uri.port.should == 9292
     end
   end
