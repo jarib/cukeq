@@ -19,6 +19,7 @@ require "cukeq/scenario_runner"
 
 require "cukeq/master"
 require "cukeq/slave"
+require "cukeq/job_clearer"
 require "cukeq/runner"
 
 module CukeQ

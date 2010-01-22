@@ -26,9 +26,9 @@ module CukeQ
       queue_for(queue_name).publish(json)
     end
 
-    def subscribe(queue_name, &blk)
+    def subscribe(queue_name, pop_timer = 0.25, &blk)
       q = queue_for(queue_name).pop(&blk)
-      EM.add_periodic_timer(0.25) { q.pop }
+      EM.add_periodic_timer(pop_timer) { q.pop }
     end
 
     # def unsubscribe(queue_name, &blk)

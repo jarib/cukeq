@@ -9,6 +9,8 @@ when 'master'
   CukeQ::Master.execute(ARGV.dup)
 when 'run'
   CukeQ::Runner.execute(ARGV.dup)
+when 'clear-jobs'
+  CukeQ::JobClearer.execute(ARGV.dup)
 when 'setup'
   # TODO - make password configurable
 
