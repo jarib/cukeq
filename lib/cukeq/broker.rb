@@ -27,12 +27,13 @@ module CukeQ
     end
 
     def subscribe(queue_name, &blk)
-      queue_for(queue_name).subscribe(&blk)
+      q = queue_for(queue_name).pop(&blk)
+      EM.add_periodic_timer(0.25) { q.pop }
     end
 
-    def unsubscribe(queue_name, &blk)
-      queue_for(queue_name).unsubscribe(&blk)
-    end
+    # def unsubscribe(queue_name, &blk)
+    #   queue_for(queue_name).unsubscribe(&blk)
+    # end
 
     def queue_for(name)
       @queues[name] || raise("unknown queue: #{name.inspect}")

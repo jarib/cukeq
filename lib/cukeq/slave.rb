@@ -69,6 +69,7 @@ module CukeQ
 
     def subscribe
       @broker.subscribe :jobs do |message|
+        next unless message
         job JSON.parse(message)
       end
     end

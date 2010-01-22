@@ -26,7 +26,7 @@ module CukeQ
     end
 
     def result_for(job)
-      returned = {:success => true}
+      returned = {:success => true, :slave => CukeQ.identifier}
 
       begin
         feature_file = job['unit']['file']
@@ -38,7 +38,7 @@ module CukeQ
 
         tmp_dir      = Dir.mktmpdir("runid#{run_id}")
 
-        output  = %x[ruby script/cuke --format junit --out #{tmp_dir} #{feature_file} 2>&1]
+        output  = %x[cucumber -rfeatures --format junit --out #{tmp_dir} #{feature_file} 2>&1]
         success = $?.success?
         results = Dir[File.join(tmp_dir, '*.xml')].map { |file| File.read(file) }
 

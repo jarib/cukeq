@@ -7,7 +7,7 @@ when 'slave'
   CukeQ::Slave.execute(ARGV.dup)
 when 'master'
   CukeQ::Master.execute(ARGV.dup)
-when 'runner'
+when 'run'
   CukeQ::Runner.execute(ARGV.dup)
 when 'setup'
   # TODO - make password configurable
@@ -27,5 +27,5 @@ when 'setup'
   puts `rabbitmqctl list_vhosts`
   puts `rabbitmqctl list_permissions -p /cukeq`
 else
-  abort "USAGE: #{File.basename $0} [slave|master|runner|setup]"
+  abort "USAGE: #{File.basename $0} [slave|master|run|setup]"
 end

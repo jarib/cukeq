@@ -92,8 +92,6 @@ module CukeQ
     #
 
     def run(data)
-      log self.class, :run, data
-
       scm = {:revision => @scm.current_revision, :url => @scm.url }
 
       units = Dir.chdir(@scm.working_copy) do
@@ -108,9 +106,11 @@ module CukeQ
             :run_id          => run_id,
             :scm             => scm,
             :unit            => unit,
-            :pre_run_command => "gem bundle; echo 'webdriver.enabled = true' > config/user.prop" # HACK!
+            # :pre_run_command => "gem bundle; echo 'webdriver.enabled = true' > config/user.prop" # HACK!
           }.to_json
         )
+
+        log self.class, :publisehd, unit
       end
     end
 
@@ -126,6 +126,7 @@ module CukeQ
 
     def subscribe
       @broker.subscribe :results do |message|
+        next unless message
         result(JSON.parse(message))
       end
     end
