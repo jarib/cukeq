@@ -28,10 +28,19 @@ module CukeQ
     def bridge
       @bridge ||= begin
         case url.scheme
-        when /git/
+        when "git"
           GitBridge.new url, working_copy
-        when /svn/
+        when "svn"
           SvnBridge.new url, working_copy
+        when "http", "https"
+         # TODO: fix heuristic for http scm urls
+          if url.to_s.include?("svn")
+            SvnBridge.new url, working_copy
+          elsif url.to_s.include?("git")
+            GitBridge.new url, working_copy
+          else
+            raise "unknown scm: #{url}"
+          end
         else
           raise "unknown scm: #{url}"
         end
