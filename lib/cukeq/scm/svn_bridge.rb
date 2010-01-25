@@ -24,7 +24,7 @@ module CukeQ
           c = Svn::Client::Context.new
 
           unless File.directory? @working_copy
-            c.checkout(@url, @working_copy)
+            c.checkout(@url.to_s, @working_copy)
           end
 
           c
