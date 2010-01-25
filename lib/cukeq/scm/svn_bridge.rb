@@ -1,3 +1,5 @@
+require "svn/client" # apt-get install libsvn-ruby
+
 module CukeQ
   class Scm
     class SvnBridge
@@ -8,11 +10,25 @@ module CukeQ
       end
 
       def update
-        raise NotImplementedError
+        client.update(@working_copy).to_s
       end
 
       def current_revision
-        raise NotImplementedError
+        client.status(@working_copy).to_s
+      end
+
+      private
+
+      def client
+        @client ||= begin
+          c = Svn::Client::Context.new
+
+          unless File.directory? @working_copy
+            c.checkout(@url, @working_copy)
+          end
+
+          c
+        end
       end
 
     end # SvnBridge

@@ -18,6 +18,8 @@ module CukeQ
 
       scm = Scm.new(url)
       unless scm.current_revision == rev
+        # TODO(jari): this doesn't ensure that current_revision == rev - it should
+        # would also make sense to move the logic to Scm
         scm.update
       end
 

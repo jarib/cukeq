@@ -10,8 +10,8 @@ module CukeQ
       end
 
       def update
-        p :reset_hard => repo.reset_hard
-        p :pull => repo.pull
+        repo.reset_hard
+        repo.pull
       end
 
       def current_revision
