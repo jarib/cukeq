@@ -10,6 +10,9 @@ module CukeQ
       Dir.chdir(scm.working_copy) do
         yield result_for(job)
       end
+
+    rescue => e
+      yield(:success => false, :error => e.message, :backtrace => e.backtrace)
     end
 
     def scm_for(job)
