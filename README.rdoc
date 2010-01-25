@@ -7,10 +7,15 @@ Cucumber features across machines and collect the results.
 
 = Dependencies
 
-You need to have an AMQP broker (like RabbitMQ installed):
+You need to have an AMQP broker (like RabbitMQ) installed and running:
 
   $ brew install rabbitmq
   $ ruby -rubygems bin/cukeq setup
+  $ rabbitmq-server
+
+If you want to use CukeQ with Subversion, you'll need to install the Ruby bindings:
+
+  $ sudo apt-get install libsvn-ruby
 
 = Interface
 
