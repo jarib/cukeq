@@ -5,7 +5,6 @@ module CukeQ
   class ScenarioRunner
 
     def run(job, &callback)
-      # return yield(job) # FIXME: `rake features` expects this
       scm = scm_for job
 
       Dir.chdir(scm.working_copy) do

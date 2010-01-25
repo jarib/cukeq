@@ -4,6 +4,7 @@ require "rack/handler/thin"
 require "json"
 
 require "uri"
+require "etc"
 require "pp"
 require "optparse"
 require "socket"
@@ -24,7 +25,7 @@ require "cukeq/runner"
 
 module CukeQ
   def self.identifier
-    @identifier ||= "#{Socket.gethostname}-#{Process.pid}"
+    @identifier ||= "#{Socket.gethostname}-#{Etc.getlogin}"
   end
 end
 
