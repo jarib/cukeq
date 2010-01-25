@@ -21,13 +21,15 @@ module CukeQ
 
       def client
         @client ||= begin
-          c = Svn::Client::Context.new
+          ctx = Svn::Client::Context.new
+
 
           unless File.directory? @working_copy
-            c.checkout(@url.to_s, @working_copy)
+            log self.class, :checkout, @url.to_s => @working_copy
+            ctx.checkout(@url.to_s, @working_copy)
           end
 
-          c
+          ctx
         end
       end
 
