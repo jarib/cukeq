@@ -8,6 +8,7 @@ module CukeQ
         @url          = url
         @working_copy = working_copy
 
+        @simple_auth_data = {}
         setup_auth
       end
 
@@ -43,39 +44,34 @@ module CukeQ
       end
 
       def find_username(realm)
-        user = ENV['CUKEQ_SVN_USERNAME'] || @url.user
-        return user if user
-
-        auth = Svn::Core::Config.read_auth_data(Svn::Core::AUTH_CRED_SIMPLE, realm)
-        raise_auth_error unless auth
-
-        auth["username"]
+        ENV['CUKEQ_SVN_USERNAME'] || @url.user || simple_auth_data_for(realm)["username"]
       end
 
       def find_password(realm)
-        pass = ENV['CUKEQ_SVN_PASSWORD'] || @url.password
-        return pass if pass
+        ENV['CUKEQ_SVN_PASSWORD'] || @url.password || simple_auth_data_for(realm)["password"]
+      end
 
-        auth = Svn::Core::Config.read_auth_data(Svn::Core::AUTH_CRED_SIMPLE, realm)
-        raise_auth_error unless auth
+      def simple_auth_data_for(realm)
+        data = @simple_auth_data_for[realm] ||= Svn::Core::Config.read_auth_data(Svn::Core::AUTH_CRED_SIMPLE, realm)
+        raise_auth_error if data.nil?
 
-        auth["password"]
+        data
       end
 
       def raise_auth_error
         raise <<-END
-         no svn authorization provided. try:
+         No SVN credentials provided. Either of these will do:
             * set CUKEQ_SVN_USERNAME and CUKEQ_SVN_PASSWORD
             * add username and password to the repo URL: https://foo:bar@svn.example.com/
-            * make sure correct simple auth is provided in ~/.subversion
+            * make sure your credentials are saved to disk (~/.subversion/auth)
          END
       end
 
       def ensure_working_copy
-        unless File.directory? @working_copy
-          log self.class, :checkout, @url.to_s => @working_copy
-          ctx.checkout(@url.to_s, @working_copy)
-        end
+        return if File.directory? @working_copy
+
+        log self.class, :checkout, @url.to_s => @working_copy
+        ctx.checkout(@url.to_s, @working_copy)
       end
 
     end # SvnBridge

@@ -81,11 +81,11 @@ describe CukeQ::Master do
 
   describe "#run" do
     it "sends the payload to the exploder" do
-      features = ["some.feature:10", "another.feature:12"]
+      data = { 'features' => ["some.feature:10", "another.feature:12"] }
       master   = running_master
 
-      master.exploder.should_receive(:explode).with(features).and_return([])
-      master.run(features)
+      master.exploder.should_receive(:explode).with(data['features']).and_return([])
+      master.run(data)
     end
 
     it "publishes the exploded scenarios on the jobs queue" do
@@ -95,7 +95,7 @@ describe CukeQ::Master do
       master.exploder.stub!(:explode).and_return(jobs)
       master.broker.should_receive(:publish).exactly(4).times
 
-      master.run(nil)
+      master.run({})
     end
 
     it "adds a run_id and scm info to the job payload" do
@@ -115,7 +115,7 @@ describe CukeQ::Master do
         payload['run']['no_of_units'].should == 1
       end
 
-      master.run(nil)
+      master.run({'run_id' => 1})
     end
   end
 
