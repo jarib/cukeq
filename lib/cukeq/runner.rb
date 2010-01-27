@@ -5,7 +5,7 @@ module CukeQ
 
     def self.execute(args)
       opts = parse(args)
-      uri = opts[:uri]
+      uri = opts.delete(:uri)
 
       EM.run {
         http = EM::P::HttpClient.request(
@@ -13,7 +13,7 @@ module CukeQ
           :port    => uri.port,
           :verb    => "POST",
           :request => uri.path.empty? ? "/" : uri.path,
-          :content => options[:features].to_json
+          :content => options.to_json
         )
 
         http.callback do |response|
@@ -40,10 +40,18 @@ module CukeQ
         opts.on("-u", "--uri URI (default: #{DEFAULT_TRIGGER_URI})") do |str|
           options[:uri] = URI.parse(str)
         end
+
+        opts.on("-i", "--id RUN_ID") do |str|
+          options[:run_id] = str
+        end
       end.parse!
 
       if argv.empty?
         raise "must provide list of features"
+      end
+
+      unless options[:run_id]
+        raise "must provide --id"
       end
 
       options[:features] = argv

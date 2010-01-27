@@ -95,11 +95,12 @@ module CukeQ
       scm = {:revision => @scm.current_revision, :url => @scm.url }
 
       units = Dir.chdir(@scm.working_copy) do
-        @exploder.explode(data)
+        @exploder.explode(data['features'])
       end
 
-      run_id = next_run_id()
-      run = {:id => run_id, :no_of_units => units.size}
+      # let the trigger provide a run id, since it will likely store the data as well
+      # run_id = next_run_id() -
+      run = {:id => data['run_id'], :no_of_units => units.size}
 
       units.each do |unit|
         @broker.publish(
