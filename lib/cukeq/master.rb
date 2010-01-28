@@ -112,7 +112,7 @@ module CukeQ
           }.to_json
         )
 
-        log self.class, :publisehd, unit
+        log self.class, :published, unit
       end
     end
 
