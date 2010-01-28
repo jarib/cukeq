@@ -13,7 +13,7 @@ module CukeQ
           :port    => uri.port,
           :verb    => "POST",
           :request => uri.path.empty? ? "/" : uri.path,
-          :content => options.to_json
+          :content => opts.to_json
         )
 
         http.callback do |response|
