@@ -8,7 +8,10 @@ module CukeQ
         @url          = url
         @working_copy = working_copy
 
-        @simple_auth_data = {}
+        @simple_auth = Hash.new do |hash, realm|
+          hash[realm] = simple_auth_for(realm) || raise_auth_error
+        end
+
         setup_auth
       end
 
@@ -30,8 +33,8 @@ module CukeQ
 
       def setup_auth
         ctx.add_simple_prompt_provider(0) do |cred, realm, username, save|
-          cred.username = find_username(realm)
-          cred.password = find_password(realm)
+          cred.username = ENV['CUKEQ_SVN_USERNAME'] || @url.user || @simple_auth[realm]["username"]
+          cred.password = ENV['CUKEQ_SVN_PASSWORD'] || @url.password || @simple_auth[realm]["password"]
           cred
         end
 
@@ -43,19 +46,8 @@ module CukeQ
         end
       end
 
-      def find_username(realm)
-        ENV['CUKEQ_SVN_USERNAME'] || @url.user || simple_auth_data_for(realm)["username"]
-      end
-
-      def find_password(realm)
-        ENV['CUKEQ_SVN_PASSWORD'] || @url.password || simple_auth_data_for(realm)["password"]
-      end
-
-      def simple_auth_data_for(realm)
-        data = @simple_auth_data_for[realm] ||= Svn::Core::Config.read_auth_data(Svn::Core::AUTH_CRED_SIMPLE, realm)
-        raise_auth_error if data.nil?
-
-        data
+      def simple_auth_for(realm)
+        Svn::Core::Config.read_auth_data(Svn::Core::AUTH_CRED_SIMPLE, realm)
       end
 
       def raise_auth_error
