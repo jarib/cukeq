@@ -17,7 +17,7 @@ module CukeQ
         )
 
         http.callback do |response|
-          log :success, message,
+          log :success, response
           EM.stop
         end
 
