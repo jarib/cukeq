@@ -23,7 +23,7 @@ module CukeQ
       def current_revision
         ensure_working_copy
         
-        Dir.chdir(@working_copy)
+        Dir.chdir(@working_copy) do
           ctx.status(@working_copy, "BASE").to_s
         end
       end
