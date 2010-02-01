@@ -37,7 +37,9 @@ module CukeQ
 
         feature_file = job['unit']['file']
         run          = job['run']
-        returned.merge!(:feature_file => feature_file, :run => run)
+        scm          = job['scm']
+
+        returned.merge!(:feature_file => feature_file, :run => run, :scm => scm)
 
         tmp_dir      = Dir.mktmpdir("#{CukeQ.identifier}-#{run['id']}")
 
