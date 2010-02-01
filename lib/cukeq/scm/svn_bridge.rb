@@ -22,7 +22,10 @@ module CukeQ
 
       def current_revision
         ensure_working_copy
-        ctx.status(@working_copy).to_s
+        
+        Dir.chdir(@working_copy)
+          ctx.status(@working_copy, "BASE").to_s
+        end
       end
 
       private
