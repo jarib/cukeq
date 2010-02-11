@@ -31,5 +31,6 @@ end
 
 def log(*args)
   args.unshift Time.now
-  puts args.map { |e| e.inspect }.join "  |  "
+  $stdout.puts args.map { |e| e.inspect }.join "  |  "
+  $stdout.flush
 end
