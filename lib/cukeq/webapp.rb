@@ -8,7 +8,7 @@ module CukeQ
 
     def run(callback)
       @callback = callback
-      Rack::Handler::Thin.run(self, :Host => @uri.host, :Port => @uri.port)
+      handler.run(self, :Host => @uri.host, :Port => @uri.port)
     end
 
     def call(env)
@@ -28,6 +28,10 @@ module CukeQ
       end
 
       [202, {}, %w[ok]]
+    end
+
+    def handler
+      Rack::Handler::Thin
     end
 
   end # App

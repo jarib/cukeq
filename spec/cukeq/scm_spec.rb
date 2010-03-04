@@ -28,6 +28,11 @@ describe CukeQ::Scm do
     scm(:svn).bridge.should be_kind_of(CukeQ::Scm::SvnBridge)
   end
 
+  it "understands http urls" do
+    CukeQ::Scm.new("http://github.com/foo/bar.git").bridge.should be_kind_of(CukeQ::Scm::GitBridge)
+    CukeQ::Scm.new("https://svn.example.com/foo/bar").bridge.should be_kind_of(CukeQ::Scm::SvnBridge)
+  end
+
   it "forwards update() to the bridge" do
     scm = scm(:git, true)
     scm.bridge.should_receive(:update)

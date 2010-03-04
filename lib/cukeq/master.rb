@@ -74,8 +74,6 @@ module CukeQ
       @reporter = reporter
       @exploder = exploder
       @webapp   = webapp
-
-      @run_id   = 0
     end
 
     def start
@@ -135,10 +133,6 @@ module CukeQ
 
     def start_webapp
       @webapp.run method(:run)
-    end
-
-    def next_run_id
-      @run_id += 1
     end
 
   end # Master

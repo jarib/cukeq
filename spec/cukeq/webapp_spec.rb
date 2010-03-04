@@ -4,7 +4,7 @@ describe CukeQ::WebApp do
   include Rack::Test::Methods
 
   def app
-    CukeQ::WebApp.new(URI.parse("http://localhost:9292"))
+    @app ||= CukeQ::WebApp.new(URI.parse("http://localhost:9292"))
   end
 
   it "errors if the request is not a POST" do
@@ -26,6 +26,12 @@ describe CukeQ::WebApp do
 
     last_response.status.should == 202
     last_response.body.should == "ok"
+  end
+
+  it "starts the app with the given callback" do
+    app.handler.should_receive(:run).with(app, {:Host => 'localhost', :Port => 9292})
+    app.run("callback")
+    app.instance_variable_get("@callback").should == "callback"
   end
 
 end

@@ -52,6 +52,15 @@ describe CukeQ::Master do
       master.webapp.uri.host.should == '0.0.0.0'
       master.webapp.uri.port.should == 9292
     end
+
+    it "uses the given --webapp" do
+      master = CukeQ::Master.configured_instance(
+        %w[-s git://example.com -r http://cukereports.com -w http://example.com]
+      )
+
+      master.webapp.uri.host.should == 'example.com'
+      master.webapp.uri.port.should == 80
+    end
   end
 
   describe ".execute" do

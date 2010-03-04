@@ -27,16 +27,32 @@ rescue LoadError
 end
 
 require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
+require 'spec/rake/verify_rcov'
+
+task :default => ["spec:coverage", "spec:coverage:verify"]
+
+Spec::Rake::SpecTask.new(:spec) do |t|
+  t.spec_opts = ["--color", "--format", "progress"]
+  t.spec_files = Dir['spec/**/*_spec.rb'].sort
+  t.libs = ['lib']
+  t.rcov = false
 end
 
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
-  spec.rcov_opts = %w[--exclude spec,ruby-debug,/Library/Ruby,.gem --include lib/cukeq]
+namespace :spec do
+  Spec::Rake::SpecTask.new(:coverage) do |t|
+    t.spec_opts = ["--color", "--format", "progress"]
+    t.spec_files = Dir['spec/**/*_spec.rb'].sort
+    t.libs = ['lib']
+    t.rcov = true
+    t.rcov_opts = ['--exclude-only', '".*"', '--include-file', '^lib']
+  end
+
+  namespace :coverage do
+    RCov::VerifyTask.new(:verify) do |t|
+      t.threshold = 100
+      t.index_html = "coverage/index.html"
+    end
+  end
 end
 
 task :spec => :check_dependencies
@@ -51,8 +67,6 @@ rescue LoadError
     abort "Cucumber is not available. In order to run features, you must: sudo gem install cucumber"
   end
 end
-
-task :default => :spec
 
 begin
   require 'yard'

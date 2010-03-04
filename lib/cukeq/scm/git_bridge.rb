@@ -19,13 +19,13 @@ module CukeQ
       end
 
       def repo
-        @repo ||= begin
+        @repo ||= (
           unless File.directory? @working_copy
             Git.clone(@url, @working_copy)
           end
 
           Git.open(@working_copy)
-        end
+        )
       end
 
     end # GitBridge

@@ -26,7 +26,7 @@ module CukeQ
     end
 
     def bridge
-      @bridge ||= begin
+      @bridge ||= (
         case url.scheme
         when "git"
           GitBridge.new url, working_copy
@@ -44,7 +44,7 @@ module CukeQ
         else
           raise "unknown scm: #{url}"
         end
-      end
+      )
     end
 
   end # Scm
