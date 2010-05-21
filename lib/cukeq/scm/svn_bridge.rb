@@ -1,4 +1,4 @@
-# require "svn/client" # apt-get install libsvn-ruby
+require "svn/client" # apt-get install libsvn-ruby
 
 module CukeQ
   class Scm
