@@ -70,10 +70,10 @@ module CukeQ
 
     def initialize(broker, webapp, scm, reporter, exploder)
       @broker   = broker
+      @webapp   = webapp
       @scm      = scm
       @reporter = reporter
       @exploder = exploder
-      @webapp   = webapp
     end
 
     def start
@@ -87,6 +87,10 @@ module CukeQ
 
     #
     # This is triggered by POSTs to the webapp
+    #
+    # data:
+    #
+    # { 'features' => (sent to exploder), 'run_id' => ID }
     #
 
     def run(data)
