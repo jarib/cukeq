@@ -41,9 +41,9 @@ module CukeQ
 
         returned.merge!(:feature_file => feature_file, :run => run, :scm => scm)
 
-        tmp_dir      = Dir.mktmpdir("#{CukeQ.identifier}-#{run['id']}")
+        tmp_file = "#{CukeQ.identifier}-#{run['id']}.json"
 
-        output  = %x[cucumber -rfeatures --format junit --out #{tmp_dir} #{feature_file} 2>&1]
+        output  = %x[cucumber -rfeatures --format Cucumber::Formatter::Json --out #{tmp_file} #{feature_file} 2>&1]
         success = $?.success?
         results = Dir[File.join(tmp_dir, '*.xml')].map { |file| File.read(file) }
 
@@ -51,7 +51,7 @@ module CukeQ
       rescue => e
         returned.merge(:success => false, :error => e.message, :backtrace => e.backtrace, :cwd => Dir.pwd)
       ensure
-        FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
+        FileUtils.rm(tmp_file) if tmp_file && File.exist?(tmp_file)
       end
     end
 
