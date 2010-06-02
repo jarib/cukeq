@@ -45,7 +45,7 @@ module CukeQ
 
         output  = %x[cucumber -rfeatures --format Cucumber::Formatter::Json --out #{tmp_file} #{feature_file} 2>&1]
         success = $?.success?
-        results = Dir[File.join(tmp_dir, '*.xml')].map { |file| File.read(file) }
+        results = read_json(tmp_file)
 
         returned.merge(:output => output, :success => success, :results => results, :cwd => Dir.pwd)
       rescue => e
@@ -65,6 +65,15 @@ module CukeQ
 
       unless $?.success?
         raise "pre-run command failed with status #{$?.exitstatus}\n#{output}"
+      end
+    end
+
+    def read_json(file)
+      content = File.read(file)
+      begin
+        JSON.parse content
+      rescue JSON::ParserError => e
+        raise JSON::ParserError, "#{e.message}: #{content}"
       end
     end
 
