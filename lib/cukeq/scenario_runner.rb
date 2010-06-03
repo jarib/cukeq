@@ -45,7 +45,7 @@ module CukeQ
 
         output  = %x[cucumber -rfeatures --format Cucumber::Formatter::Json --out #{tmp_file} #{feature_file} 2>&1]
         success = $?.success?
-        results = read_json(tmp_file)
+        results = read_json(tmp_file) if File.exist?(tmp_file)
 
         returned.merge(:output => output, :success => success, :results => results, :cwd => Dir.pwd)
       rescue => e
