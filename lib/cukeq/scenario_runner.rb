@@ -49,7 +49,8 @@ module CukeQ
 
         returned.merge(:output => output, :success => success, :results => results, :cwd => Dir.pwd)
       rescue => e
-        returned.merge(:success => false, :error => e.message, :backtrace => e.backtrace, :cwd => Dir.pwd)
+        returned.merge!(:success => false, :error => e.message, :backtrace => e.backtrace, :cwd => Dir.pwd)
+        output ? returned.merge(:output => output) : returned
       ensure
         FileUtils.rm(tmp_file) if tmp_file && File.exist?(tmp_file)
       end
@@ -73,7 +74,7 @@ module CukeQ
       begin
         JSON.parse content
       rescue JSON::ParserError => e
-        raise JSON::ParserError, "#{e.message}: #{content}"
+        raise JSON::ParserError, "#{e.message}: #{content.inspect}"
       end
     end
 
