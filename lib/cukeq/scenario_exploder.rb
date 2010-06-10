@@ -2,7 +2,7 @@ module CukeQ
   class ScenarioExploder
 
     def explode(file_colon_lines)
-      file_colon_lines.map { |f| json_for(f) } # temporary
+      yield file_colon_lines.map { |f| {:file => f} } # temporary
 
       # # cwd is now the working copy of the project
       # units = []
@@ -24,13 +24,7 @@ module CukeQ
       #   end
       # end
       #
-      # units
-    end
-
-    def json_for(file_colon_line)
-      # here's where we'll build whatever the ScenarioRunner needs
-      # for now though, we'll just do this:
-      {:file => file_colon_line} # HACK!
+      # yield units
     end
 
   end # ScenarioExploder

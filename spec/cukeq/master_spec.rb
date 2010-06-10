@@ -101,7 +101,7 @@ describe CukeQ::Master do
       jobs   = %w[job1 job2 job3 job4]
       master = running_master
 
-      master.exploder.stub!(:explode).and_return(jobs)
+      master.exploder.stub!(:explode).and_yield(jobs)
       master.broker.should_receive(:publish).exactly(4).times
 
       master.run({})
@@ -111,7 +111,7 @@ describe CukeQ::Master do
       jobs = ["job1"]
       master = running_master
 
-      master.exploder.stub!(:explode).and_return(jobs)
+      master.exploder.stub!(:explode).and_yield(jobs)
       master.scm.stub!(:current_revision).and_return("abadbabe")
       master.scm.stub!(:url).and_return("git://github.com/jarib/cukeq.git")
 

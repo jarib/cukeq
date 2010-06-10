@@ -14,11 +14,11 @@ require "cukeq/webapp"
 require "cukeq/scm"
 require "cukeq/scm/git_bridge"
 
-begin
-  require "cukeq/scm/svn_bridge"
-rescue LoadError
-  require "cukeq/scm/simple_svn_bridge"
-end
+# begin
+#   require "cukeq/scm/svn_bridge"
+# rescue LoadError
+#   require "cukeq/scm/simple_svn_bridge"
+# end
 
 require "cukeq/reporter"
 require "cukeq/scenario_exploder"
