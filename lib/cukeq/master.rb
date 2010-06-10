@@ -122,8 +122,7 @@ module CukeQ
     #
 
     def result(message)
-      log self.class, :result, message
-
+      log self.class, :result, message['run']
       @reporter.report(message)
     end
 

@@ -62,7 +62,7 @@ module CukeQ
     #
 
     def publish(message)
-      log log_name, :publish, message
+      log log_name, :publish, message[:run]
       @broker.publish :results, message.to_json
     end
 
