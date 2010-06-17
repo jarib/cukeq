@@ -8,10 +8,7 @@ module CukeQ
 
     def run(job, &callback)
       scm = scm_for job
-
-      Dir.chdir(scm.working_copy) do
-        run_job(job, callback)
-      end
+      run_job(scm.working_copy, job, callback)
     rescue => ex
       yield :success => false, :error => ex.message, :backtrace => ex.backtrace
     end
@@ -39,16 +36,20 @@ end # CukeQ
 
 class AsyncJob
 
-  def initialize(job, callback)
-    @job      = job
-    @callback = callback
-    @result   = {:success => true, :slave => CukeQ.identifier}
-    @invoked  = false
+  def initialize(working_copy, job, callback)
+    @job          = job
+    @callback     = callback
+    @result       = {:success => true, :slave => CukeQ.identifier}
+    @working_copy = working_copy
+    @invoked      = false
   end
 
   def run
     parse_job
-    EM.system3(command, &method(:child_finished))
+
+    Dir.chdir(working_copy) {
+      EventMachine.system3 command, &method(:child_finished)
+    }
   rescue => ex
     handle_exception(ex)
   end
