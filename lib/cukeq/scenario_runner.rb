@@ -47,7 +47,7 @@ class AsyncJob
   def run
     parse_job
 
-    Dir.chdir(working_copy) {
+    Dir.chdir(@working_copy) {
       EventMachine.system3 command, &method(:child_finished)
     }
   rescue => ex

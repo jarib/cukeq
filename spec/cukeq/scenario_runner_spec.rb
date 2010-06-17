@@ -24,4 +24,7 @@ describe CukeQ::ScenarioRunner do
     runner.scm_for(job).should == mock_scm
   end
 
+  # important.
+  it "executes the given job"
+
 end
