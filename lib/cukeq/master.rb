@@ -82,12 +82,11 @@ module CukeQ
       @broker.start do
         subscribe
         start_webapp
-        EM.add_timer(5) { ping { |res| puts res }}
       end
     end
 
     def ping(&blk)
-      log self.class, :ping
+      log log_name, :ping
       @broker.subscribe :pong, &blk
       @broker.publish   :ping, '{}'
     end

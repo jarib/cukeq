@@ -76,7 +76,7 @@ describe CukeQ::Slave do
   describe "#publish" do
     it "it publishes the message on the results queue" do
       slave = running_slave
-      message = {:run => "some message"}
+      message = "some message"
 
       slave.broker.should_receive(:publish).with(:results, message.to_json)
       slave.publish(message)
