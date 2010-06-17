@@ -8,9 +8,15 @@ module CukeQ
 
     def run(job, &callback)
       scm = scm_for job
+
+      Dir.chdir scm.working_copy
+
       run_job(scm.working_copy, job, callback)
     rescue => ex
-      yield :success => false, :error => ex.message, :backtrace => ex.backtrace
+      yield :success   => false, 
+            :error     => ex.message, 
+            :backtrace => ex.backtrace,
+            :run       => job['run']
     end
 
     def scm_for(job)
@@ -27,8 +33,8 @@ module CukeQ
       scm
     end
 
-    def run_job(job, callback)
-      AsyncJob.new(job, callback).run
+    def run_job(working_copy, job, callback)
+      AsyncJob.new(working_copy, job, callback).run
     end
 
   end # ScenarioRunner
@@ -40,16 +46,14 @@ class AsyncJob
     @job          = job
     @callback     = callback
     @result       = {:success => true, :slave => CukeQ.identifier}
-    @working_copy = working_copy
     @invoked      = false
+    @working_copy = working_copy
   end
 
   def run
     parse_job
 
-    Dir.chdir(@working_copy) {
-      EventMachine.system3 command, &method(:child_finished)
-    }
+    EventMachine.system3 command, &method(:child_finished)
   rescue => ex
     handle_exception(ex)
   end
@@ -90,18 +94,18 @@ stderr:
     OUT
 
     @result.merge!(:output => output, :success => status.success?, :results => fetch_results, :cwd => Dir.pwd)
-  rescue => ex
-    handle_exception ex
-  ensure
     cleanup
     invoke_callback
+  rescue => ex
+    handle_exception ex
   end
 
   def fetch_results
     return unless File.exist?(output_file)
+
     content = File.read(output_file)
     begin
-      JSON.parse(output_file)
+      JSON.parse(content)
     rescue JSON::ParserError => ex
       raise JSON::ParserError, "#{ex.message} (#{content.inspect})"
     end
