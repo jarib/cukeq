@@ -41,11 +41,11 @@ module CukeQ
     private
 
     def create_queues
-      @queues[:ping]    = MQ.new.queue("cukeq.ping")
-      @queues[:pong]    = MQ.new.queue("cukeq.pong")
+      @queues[:ping]    = MQ.fanout    "cukeq.ping"
+      @queues[:pong]    = MQ.new.queue "cukeq.pong"
 
-      @queues[:results] = MQ.new.queue("cukeq.results")
-      @queues[:jobs]    = MQ.new.queue("cukeq.jobs")
+      @queues[:results] = MQ.new.queue "cukeq.results"
+      @queues[:jobs]    = MQ.new.queue "cukeq.jobs"
     end
 
     def amqp_options

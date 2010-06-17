@@ -99,7 +99,7 @@ module CukeQ
     #
 
     def ping_pong
-      @broker.subscribe(:ping) { |message|
+      MQ.queue("pingpong").bind(@broker.queue_for(:ping)).subscribe { |message|
         log log_name, :ping
         @broker.publish :pong, {:id => CukeQ.identifier, :class => self.class.name}.to_json
       }
