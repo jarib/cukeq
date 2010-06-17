@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module CukeQ
   class Slave
     DEFAULT_BROKER_URI = URI.parse("amqp://cukeq-slave:cukeq123@localhost:5672/cukeq")
@@ -34,7 +36,6 @@ module CukeQ
           opts.on("-b", "--broker URI (default: #{DEFAULT_BROKER_URI})") do |b|
             options[:broker] = URI.parse(b)
           end
-
         end.parse!
 
         options
@@ -49,12 +50,10 @@ module CukeQ
     end
 
     def start
-      @broker.start { subscribe }
-    end
-
-    def job(message)
-      log log_name, :job, message
-      @scenario_runner.run(message) { |result| publish(result) }
+      @broker.start {
+        ping_pong
+        poll
+      }
     end
 
     #
@@ -66,15 +65,48 @@ module CukeQ
       @broker.publish :results, message.to_json
     end
 
-    def subscribe
-      @broker.subscribe :jobs do |message|
-        next unless message
-        job JSON.parse(message)
-      end
+    #
+    # Run a job
+    #
+
+    def job(message)
+      log log_name, :job, message
+
+      @scenario_runner.run(message) { |result|
+        publish(result)
+        EM.next_tick { poll } # job done, start polling again
+      }
+    end
+
+    POLL_INTERVAL = 0.25
+
+    #
+    # Poll for new jobs
+    #
+
+    def poll
+      @broker.queue_for(:jobs).pop { |input|
+        if input
+          job JSON.parse(input)
+        else
+          EM.add_timer(POLL_INTERVAL) { poll }
+        end
+      }
+    end
+
+    #
+    # Subscribe to :ping, respond to :pong
+    #
+
+    def ping_pong
+      @broker.subscribe(:ping) { |message|
+        log log_name, :ping
+        @broker.publish :pong, {:id => CukeQ.identifier, :class => self.class.name}.to_json
+      }
     end
 
     def log_name
-      [self.class, Process.pid]
+      @log_name ||= [self.class, Process.pid]
     end
 
   end # Slave

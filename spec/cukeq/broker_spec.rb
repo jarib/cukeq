@@ -29,8 +29,8 @@ describe CukeQ::Broker do
       AMQP.should_receive(:start).with(hash_including(expected_params)).and_yield
 
       mock_q = mock("queue")
-      MQ.should_receive(:new).twice.and_return(mock_q)
-      mock_q.should_receive(:queue).twice
+      MQ.should_receive(:new).exactly(4).times.and_return(mock_q)
+      mock_q.should_receive(:queue).exactly(4).times
 
       broker.start
     end
@@ -51,7 +51,7 @@ describe CukeQ::Broker do
     broker = running_broker
 
     # TODO: this looks pretty stupid, could we just expose the queues directly?
-    queues[:results].should_receive(:pop)
+    queues[:results].should_receive(:subscribe)
     broker.subscribe(:results) {}
   end
 

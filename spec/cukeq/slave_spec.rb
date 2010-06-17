@@ -54,7 +54,7 @@ describe CukeQ::Slave do
     it "subscribes to the jobs queue" do
       slave = mock_slave
       slave.broker.should_receive(:start).and_yield
-      slave.should_receive(:subscribe)
+      slave.should_receive(:poll)
 
       slave.start
     end
@@ -80,16 +80,6 @@ describe CukeQ::Slave do
 
       slave.broker.should_receive(:publish).with(:results, message.to_json)
       slave.publish(message)
-    end
-  end
-
-  describe "#subscribe" do
-    it "should subscribe to the jobs queue and process the messages" do
-      slave = running_slave
-      slave.broker.should_receive(:subscribe).with(:jobs).and_yield('{"some": "job"}')
-      slave.should_receive(:job).with('some' => 'job')
-
-      slave.subscribe
     end
   end
 

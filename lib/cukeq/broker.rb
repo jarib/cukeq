@@ -26,14 +26,13 @@ module CukeQ
       queue_for(queue_name).publish(json)
     end
 
-    def subscribe(queue_name, pop_timer = 0.25, &blk)
-      q = queue_for(queue_name).pop(&blk)
-      EM.add_periodic_timer(pop_timer) { q.pop }
+    def subscribe(queue_name, &blk)
+      queue_for(queue_name).subscribe(&blk)
     end
 
-    # def unsubscribe(queue_name, &blk)
-    #   queue_for(queue_name).unsubscribe(&blk)
-    # end
+    def unsubscribe(queue_name, &blk)
+      queue_for(queue_name).unsubscribe(&blk)
+    end
 
     def queue_for(name)
       @queues[name] || raise("unknown queue: #{name.inspect}")
@@ -42,6 +41,9 @@ module CukeQ
     private
 
     def create_queues
+      @queues[:ping]    = MQ.new.queue("cukeq.ping")
+      @queues[:pong]    = MQ.new.queue("cukeq.pong")
+
       @queues[:results] = MQ.new.queue("cukeq.results")
       @queues[:jobs]    = MQ.new.queue("cukeq.jobs")
     end

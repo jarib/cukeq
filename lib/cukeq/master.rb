@@ -85,6 +85,12 @@ module CukeQ
       end
     end
 
+    def ping(&blk)
+      log log_name, :ping
+      @broker.subscribe :pong, &blk
+      @broker.publish   :ping, '{}'
+    end
+
     #
     # This is triggered by POSTs to the webapp
     #
@@ -100,8 +106,8 @@ module CukeQ
     end
 
     def publish_units(data, units)
-      scm = {:revision => @scm.current_revision, :url => @scm.url }
-      run = {:id => data['run_id'], :no_of_units => units.size}
+      scm = { :revision => @scm.current_revision, :url => @scm.url }
+      run = { :id => data['run_id'], :no_of_units => units.size}
 
       units.each do |unit|
         @broker.publish(
@@ -109,7 +115,6 @@ module CukeQ
             :run         => run,
             :scm         => scm,
             :unit        => unit,
-            # :pre_run_command => "gem bundle; echo 'webdriver.enabled = true' > config/user.prop" # HACK!
           }.to_json
         )
 
@@ -123,7 +128,7 @@ module CukeQ
 
     def result(message)
       log self.class, :result, message['run']
-      @reporter.report(message)
+      @reporter.report message
     end
 
     def subscribe

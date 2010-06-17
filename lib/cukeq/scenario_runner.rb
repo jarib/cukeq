@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "tmpdir"
 require "fileutils"
 
@@ -8,11 +10,10 @@ module CukeQ
       scm = scm_for job
 
       Dir.chdir(scm.working_copy) do
-        yield result_for(job)
+        run_job(job, callback)
       end
-
-    rescue => e
-      yield(:success => false, :error => e.message, :backtrace => e.backtrace)
+    rescue => ex
+      yield :success => false, :error => ex.message, :backtrace => ex.backtrace
     end
 
     def scm_for(job)
@@ -29,54 +30,92 @@ module CukeQ
       scm
     end
 
-    def result_for(job)
-      returned = {:success => true, :slave => CukeQ.identifier}
-
-      begin
-        run_pre_run_if_necessary(job)
-
-        feature_file = job['unit']['file']
-        run          = job['run']
-        scm          = job['scm']
-
-        returned.merge!(:feature_file => feature_file, :run => run, :scm => scm)
-
-        tmp_file = "#{CukeQ.identifier}-#{run['id']}.json"
-
-        output  = %x[cucumber -rfeatures --format Cucumber::Formatter::Json --out #{tmp_file} #{feature_file} 2>&1]
-        success = $?.success?
-        results = read_json(tmp_file) if File.exist?(tmp_file)
-
-        returned.merge(:output => output, :success => success, :results => results, :cwd => Dir.pwd)
-      rescue => e
-        returned.merge!(:success => false, :error => e.message, :backtrace => e.backtrace, :cwd => Dir.pwd)
-        output ? returned.merge(:output => output) : returned
-      ensure
-        FileUtils.rm(tmp_file) if tmp_file && File.exist?(tmp_file)
-      end
-    end
-
-    def run_pre_run_if_necessary(job)
-      cmd = job['pre_run_command']
-
-      return if cmd.nil?
-      # TODO: only run if revision has changed since last run
-
-      output = %x[#{cmd} 2>&1]
-
-      unless $?.success?
-        raise "pre-run command failed with status #{$?.exitstatus}\n#{output}"
-      end
-    end
-
-    def read_json(file)
-      content = File.read(file)
-      begin
-        JSON.parse content
-      rescue JSON::ParserError => e
-        raise JSON::ParserError, "#{e.message}: #{content.inspect}"
-      end
+    def run_job(job, callback)
+      AsyncJob.new(job, callback).run
     end
 
   end # ScenarioRunner
 end # CukeQ
+
+class AsyncJob
+
+  def initialize(job, callback)
+    @job      = job
+    @callback = callback
+    @result   = {:success => true, :slave => CukeQ.identifier}
+    @invoked  = false
+  end
+
+  def run
+    parse_job
+    EM.system3(command, &method(:child_finished))
+  rescue => ex
+    handle_exception(ex)
+  end
+
+  private
+
+  def handle_exception(ex)
+    @result.merge!(:success => false, :error => ex.message, :backtrace => ex.backtrace, :cwd => Dir.pwd)
+    cleanup
+    invoke_callback
+  end
+
+  def invoke_callback
+    if @invoked
+      $stderr.puts "#{self} tried to invoke callback twice"
+      return
+    end
+
+    @invoked = true
+    @callback.call @result
+  end
+
+  def cleanup
+    FileUtils.rm_rf(output_file) if File.exist?(output_file)
+  end
+
+  def command
+    "cucumber -rfeatures --format Cucumber::Formatter::Json --out #{output_file} #{@feature_file}"
+  end
+
+  def child_finished(stdout, stderr, status)
+    output = <<-OUT
+stdout:
+#{stdout}
+
+stderr:
+#{stderr}
+    OUT
+
+    @result.merge!(:output => output, :success => status.success?, :results => fetch_results, :cwd => Dir.pwd)
+  rescue => ex
+    handle_exception ex
+  ensure
+    cleanup
+    invoke_callback
+  end
+
+  def fetch_results
+    return unless File.exist?(output_file)
+    content = File.read(output_file)
+    begin
+      JSON.parse(output_file)
+    rescue JSON::ParserError => ex
+      raise JSON::ParserError, "#{ex.message} (#{content.inspect})"
+    end
+  end
+
+  def parse_job
+    @feature_file = @job['unit']['file']
+    @run          = @job['run']
+    @scm          = @job['scm']
+
+    @result.merge!(:feature_file => @feature_file, :run => @run, :scm => @scm)
+  end
+
+  def output_file
+    @output_file ||= "#{CukeQ.identifier}-#{@run['id']}.json"
+  end
+
+end

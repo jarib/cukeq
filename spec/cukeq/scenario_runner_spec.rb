@@ -14,7 +14,7 @@ describe CukeQ::ScenarioRunner do
     end
   end
 
-  it "creates a configured and updated scm instance" do
+  it "creates a configured and updated Scm instance" do
     job = {'scm' => {'url' => 'git://example.com/foo/bar', 'revision' => 'some-revision'}}
 
     CukeQ::Scm.should_receive(:new).with(job['scm']['url']).and_return(mock_scm = mock("scm"))
@@ -23,6 +23,5 @@ describe CukeQ::ScenarioRunner do
 
     runner.scm_for(job).should == mock_scm
   end
-
 
 end

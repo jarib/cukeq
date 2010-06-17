@@ -9,16 +9,18 @@ require "pp"
 require "optparse"
 require "socket"
 
+require "cukeq/em/system3"
+
 require "cukeq/broker"
 require "cukeq/webapp"
 require "cukeq/scm"
 require "cukeq/scm/git_bridge"
 
-# begin
-#   require "cukeq/scm/svn_bridge"
-# rescue LoadError
-#   require "cukeq/scm/simple_svn_bridge"
-# end
+begin
+  require "cukeq/scm/svn_bridge"
+rescue LoadError
+  require "cukeq/scm/shell_svn_bridge"
+end
 
 require "cukeq/reporter"
 require "cukeq/scenario_exploder"
@@ -36,8 +38,7 @@ module CukeQ
 end
 
 def log(*args)
-  args.unshift Time.now
-  str = args.map { |e| e.inspect }.join "  |  "
+  str = [Time.now, *args].map { |e| e.inspect }.join "  |  "
 
   $stdout.puts str
   $stdout.flush
