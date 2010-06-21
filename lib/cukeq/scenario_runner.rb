@@ -13,8 +13,8 @@ module CukeQ
 
       run_job(scm.working_copy, job, callback)
     rescue => ex
-      yield :success   => false, 
-            :error     => ex.message, 
+      yield :success   => false,
+            :error     => ex.message,
             :backtrace => ex.backtrace,
             :run       => job['run']
     end
@@ -93,7 +93,15 @@ stderr:
 #{stderr}
     OUT
 
-    @result.merge!(:output => output, :success => status.success?, :results => fetch_results, :cwd => Dir.pwd)
+    @result.merge!(
+      :output   => output,
+      :stderr   => stderr,
+      :stdout   => stdout,
+      :success  => status.success?,
+      :exitcode => status.exitstatus,
+      :results  => fetch_results,
+      :cwd      => Dir.pwd
+    )
     cleanup
     invoke_callback
   rescue => ex
