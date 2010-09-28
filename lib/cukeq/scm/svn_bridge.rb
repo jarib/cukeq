@@ -15,9 +15,12 @@ module CukeQ
         setup_auth
       end
 
-      def update
+      def update(&blk)
         ensure_working_copy
         ctx.update(@working_copy).to_s
+
+        # TODO: async
+        yield
       end
 
       def current_revision

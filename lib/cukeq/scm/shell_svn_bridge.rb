@@ -9,11 +9,13 @@ module CukeQ
         @url          = url
         @working_copy = working_copy
       end
-      
-      def update
+
+      def update(&blk)
         ensure_working_copy
         Dir.chdir(@working_copy) { execute "svn update --non-interactive" }
-        current_revision
+
+        # TODO: async
+        yield
       end
 
       def current_revision

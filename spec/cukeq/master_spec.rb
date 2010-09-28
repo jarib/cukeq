@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../spec_helper"
+require File.expand_path("../../spec_helper", __FILE__)
 
 describe CukeQ::Master do
   def mock_master
@@ -79,7 +79,7 @@ describe CukeQ::Master do
     it "updates, subscribes to the results queue and runs the webapp" do
       master = CukeQ::Master.new(mock("CukeQ::Broker"), mock("CukeQ::WebApp"), mock("CukeQ::Scm"), nil, nil)
 
-      master.scm.should_receive(:update)
+      master.scm.should_receive(:update).and_yield
       master.broker.should_receive(:start).and_yield
       master.should_receive(:subscribe)
       master.webapp.should_receive(:run)

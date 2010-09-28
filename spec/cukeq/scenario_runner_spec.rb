@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../spec_helper"
+require File.expand_path("../../spec_helper", __FILE__)
 
 describe CukeQ::ScenarioRunner do
 
@@ -19,12 +19,14 @@ describe CukeQ::ScenarioRunner do
 
     CukeQ::Scm.should_receive(:new).with(job['scm']['url']).and_return(mock_scm = mock("scm"))
     mock_scm.should_receive(:current_revision).and_return 'another-revision'
-    mock_scm.should_receive(:update)
+    mock_scm.should_receive(:update).and_yield
 
     runner.scm_for(job).should == mock_scm
   end
 
   # important.
-  it "executes the given job"
+  it "executes the given job" do
+    pending
+  end
 
 end

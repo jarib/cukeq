@@ -19,9 +19,9 @@ module CukeQ
       bridge.current_revision
     end
 
-    def update
+    def update(&blk)
       log self.class, :updating, url.to_s => working_copy
-      bridge.update
+      bridge.update(&blk)
       log self.class, :done
     end
 

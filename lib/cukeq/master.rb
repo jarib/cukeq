@@ -77,12 +77,12 @@ module CukeQ
     end
 
     def start
-      @scm.update
-
-      @broker.start do
-        subscribe
-        start_webapp
-      end
+      @scm.update {
+        @broker.start {
+          subscribe
+          start_webapp
+        }
+      }
     end
 
     def ping(&blk)

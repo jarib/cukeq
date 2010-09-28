@@ -27,7 +27,7 @@ module CukeQ
       unless scm.current_revision.to_s == rev.to_s
         # TODO(jari): this doesn't ensure that current_revision == rev - it
         # would also make sense to move the logic to Scm
-        scm.update
+        scm.update {} # hmm.
       end
 
       scm

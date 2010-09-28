@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../spec_helper"
+require File.expand_path("../../spec_helper", __FILE__)
 
 describe CukeQ::Scm do
 
@@ -35,8 +35,8 @@ describe CukeQ::Scm do
 
   it "forwards update() to the bridge" do
     scm = scm(:git, true)
-    scm.bridge.should_receive(:update)
-    scm.update
+    scm.bridge.should_receive(:update).and_yield
+    scm.update {}
   end
 
   it "forwards current_revision() to the bridge" do

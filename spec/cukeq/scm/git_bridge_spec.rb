@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../../spec_helper"
+require File.expand_path("../../../spec_helper", __FILE__)
 
 describe CukeQ::Scm::GitBridge do
   include FileUtils
@@ -45,7 +45,7 @@ describe CukeQ::Scm::GitBridge do
     mock_repo.should_receive(:reset_hard)
     mock_repo.should_receive(:pull)
 
-    bridge.update
+    bridge.update {}
   end
 
 

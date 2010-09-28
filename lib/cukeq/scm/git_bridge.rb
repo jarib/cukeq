@@ -9,9 +9,12 @@ module CukeQ
         @working_copy = working_copy
       end
 
-      def update
+      def update(&blk)
         repo.reset_hard
         repo.pull
+
+        # TODO: async
+        yield
       end
 
       def current_revision
