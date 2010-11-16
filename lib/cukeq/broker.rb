@@ -3,6 +3,8 @@ module CukeQ
     attr_reader :user, :pass, :host, :port, :vhost
 
     def initialize(uri, opts = {})
+      uri = URI.parse(uri) if uri.kind_of? String
+
       @user    = uri.user     || raise(ArgumentError, "no user given")
       @pass    = uri.password || 'cukeq123'
       @host    = uri.host     || 'localhost'

@@ -15,6 +15,12 @@ describe CukeQ::Broker do
     broker
   end
 
+  it "accepts a String URI" do
+    broker = CukeQ::Broker.new("amqp://cukeq-master@localhost:1234/cukeq")
+    broker.user.should == "cukeq-master"
+    broker.host.should == "localhost"
+  end
+
   describe "#start" do
     it "starts AMQP with the given broker config" do
       broker = CukeQ::Broker.new(URI.parse("amqp://cukeq-master@localhost:1234/cukeq"))
