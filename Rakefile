@@ -16,7 +16,7 @@ begin
     g.add_dependency "json"
     g.add_dependency "git"
 
-    g.add_development_dependency "rspec", ">= 1.2.9"
+    g.add_development_dependency "rspec", ">= 2.0.0"
     g.add_development_dependency "yard", ">= 0"
     g.add_development_dependency "cucumber", ">= 0"
     g.add_development_dependency "rack-test", ">= 0"
@@ -26,32 +26,22 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'spec/rake/spectask'
-require 'spec/rake/verify_rcov'
+require 'rspec/core/rake_task'
 
 task :default => ["spec:coverage", "spec:coverage:verify"]
 
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_opts = ["--color", "--format", "progress"]
-  t.spec_files = Dir['spec/**/*_spec.rb'].sort
-  t.libs = ['lib']
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = ["--color", "--format", "progress"]
+  t.pattern = 'spec/**/*_spec.rb'
   t.rcov = false
 end
 
 namespace :spec do
-  Spec::Rake::SpecTask.new(:coverage) do |t|
-    t.spec_opts = ["--color", "--format", "progress"]
-    t.spec_files = Dir['spec/**/*_spec.rb'].sort
-    t.libs = ['lib']
+  RSpec::Core::RakeTask.new(:coverage) do |t|
+    t.rspec_opts = ["--color", "--format", "progress"]
+    t.pattern = 'spec/**/*_spec.rb'
     t.rcov = true
     t.rcov_opts = ['--exclude-only', '".*"', '--include-file', '^lib']
-  end
-
-  namespace :coverage do
-    RCov::VerifyTask.new(:verify) do |t|
-      t.threshold = 100
-      t.index_html = "coverage/index.html"
-    end
   end
 end
 
