@@ -3,11 +3,11 @@ require File.expand_path("../../spec_helper", __FILE__)
 describe CukeQ::Master do
   def mock_master
     CukeQ::Master.new(
-      mock("CukeQ::Broker",   :null_object => true),
-      mock("CukeQ::WebApp",   :null_object => true),
-      mock("CukeQ::Scm",      :null_object => true, :working_copy => "."),
-      mock("CukeQ::Reporter", :null_object => true),
-      mock("CukeQ::Exploder", :null_object => true)
+      mock("CukeQ::Broker").as_null_object,
+      mock("CukeQ::WebApp").as_null_object,
+      mock("CukeQ::Scm", :working_copy => ".").as_null_object,
+      mock("CukeQ::Reporter").as_null_object,
+      mock("CukeQ::Exploder").as_null_object
     )
   end
 

@@ -11,7 +11,7 @@ describe CukeQ::Scm::GitBridge do
   end
 
   def mock_repo
-    @mock_repo ||= mock("Git::Base", :null_object => true)
+    @mock_repo ||= mock("Git::Base").as_null_object
   end
 
   def bridge

@@ -4,8 +4,8 @@ describe CukeQ::Slave do
 
   def mock_slave
     CukeQ::Slave.new(
-      mock("CukeQ::Broker", :null_object => true),
-      mock("CukeQ::ScenarioRunner", :null_object => true)
+      mock("CukeQ::Broker").as_null_object,
+      mock("CukeQ::ScenarioRunner").as_null_object
     )
   end
 
