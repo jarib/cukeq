@@ -12,6 +12,7 @@ module CukeQHelper
   def start_master
     pids << fork { CukeQ::Master.execute(MASTER_ARGS) }
     ensure_running
+    ensure_listening(master_url)
   end
 
   def start_slave
@@ -23,7 +24,9 @@ module CukeQHelper
     app = report_app()
 
     pids << fork { app.start }
+
     ensure_running
+    ensure_listening(app.url)
   end
 
   def post(url, data)
@@ -51,6 +54,16 @@ module CukeQHelper
     end
   end
 
+  def ensure_listening(url)
+    max_time = Time.now + 10
+    until listening?(url)
+      if Time.now > max_time
+        raise "timed out waiting for #{url} to respond"
+      end
+      sleep 0.1
+    end
+  end
+
   def report_app
     @report_app ||= ReportApp.new
   end
@@ -60,7 +73,7 @@ module CukeQHelper
   end
 
   def execute_request(url, req)
-    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+    res = Net::HTTP.new(url.host, url.port).start { |http| http.request(req) }
 
     case res
     when Net::HTTPSuccess
@@ -68,6 +81,14 @@ module CukeQHelper
     else
       res.error!
     end
+  end
+
+  def listening?(url)
+    uri = URI.parse(url)
+    TCPSocket.new(uri.host, uri.port).close
+    true
+  rescue
+    false
   end
 
 end

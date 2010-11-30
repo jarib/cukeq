@@ -10,6 +10,8 @@ class ReportApp
 
   def start
     Rack::Handler::Thin.run(self, :Port => port)
+  rescue => ex
+    puts $!, $@
   end
 
   def results

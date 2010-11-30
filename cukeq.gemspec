@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/jarib/cukeq"
   s.summary     = %Q{Distributed cucumbers}
   s.description = %Q{Cucumber features distributed using AMQP.}
-  
+
   s.rubyforge_project = "cukeq"
 
   s.add_runtime_dependency "amqp",      ">= 0"
@@ -19,11 +19,13 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "json",      ">= 0"
   s.add_runtime_dependency "git",       ">= 0"
   s.add_runtime_dependency "nokogiri",  ">= 0"
-  
+
   s.add_development_dependency "rspec",     ">= 2.0.0"
   s.add_development_dependency "yard",      ">= 0"
   s.add_development_dependency "cucumber",  ">= 0"
   s.add_development_dependency "rack-test", ">= 0"
+  s.add_development_dependency "childprocess", ">= 0.1.4"
+  s.add_development_dependency "ruby-debug19"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

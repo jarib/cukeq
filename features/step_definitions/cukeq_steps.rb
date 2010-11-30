@@ -9,7 +9,7 @@ end
 
 Given /^I POST the following list to the master web service:$/ do |table|
   features = table.raw.flatten
-  post(master_url, features.to_json)
+  post(master_url, {:features => features}.to_json)
 end
 
 Then /^the report app should know when the run has finished$/ do

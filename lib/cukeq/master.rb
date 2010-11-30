@@ -139,6 +139,7 @@ module CukeQ
     end
 
     def start_webapp
+      log self.class, :start_webapp
       @webapp.run method(:run)
     end
 

@@ -2,11 +2,15 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
 
 require 'rubygems'
 require 'cukeq'
-require 'spec/expectations'
-require File.dirname(__FILE__) + "/report_app"
-require File.dirname(__FILE__) + "/cukeq_helper"
+require 'rspec/expectations'
+require File.expand_path("../report_app", __FILE__)
+require File.expand_path("../cukeq_helper", __FILE__)
+require File.expand_path("../test_environment", __FILE__)
+require File.expand_path("../rabbit_control", __FILE__)
 
 World(CukeQHelper)
+
+TestEnvironment.launch
 
 After do
   cleanup
