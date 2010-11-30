@@ -5,14 +5,13 @@ module CukeQ
     autoload :GitBridge, "cukeq/scm/git_bridge"
     autoload :SvnBridge, "cukeq/scm/svn_bridge"
 
-    ROOT = File.expand_path("~/.cukeq")
-
-    def initialize(url)
+    def initialize(url, root_dir = CukeQ.root)
+      @root_dir = root_dir
       @url = url.kind_of?(String) ? URI.parse(url) : url
     end
 
     def working_copy
-      @working_copy ||= "#{ROOT}/repos/#{url.host}/#{url.path.gsub(/[^A-z]+/, '_')}"
+      @working_copy ||= "#{@root_dir}/repos/#{url.host}/#{url.path.gsub(/[^A-z]+/, '_')}"
     end
 
     def current_revision
@@ -33,7 +32,7 @@ module CukeQ
         when "svn"
           SvnBridge.new url, working_copy
         when "http", "https"
-         # TODO: fix heuristic for http scm urls
+          # TODO: fix heuristic for http scm urls
           if url.to_s.include?("svn")
             SvnBridge.new url, working_copy
           elsif url.to_s.include?("git")

@@ -35,6 +35,10 @@ module CukeQ
   def self.identifier
     @identifier ||= "#{Socket.gethostname}-#{Etc.getlogin}"
   end
+
+  def self.root
+    @root ||= File.expand_path("~/.cukeq")
+  end
 end
 
 def log(*args)

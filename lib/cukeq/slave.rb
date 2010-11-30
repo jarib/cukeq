@@ -24,7 +24,7 @@ module CukeQ
 
         new(
           Broker.new(opts[:broker]),
-          ScenarioRunner.new
+          ScenarioRunner.new(opts[:repos])
         )
       end
 
@@ -35,6 +35,10 @@ module CukeQ
         argv.options do |opts|
           opts.on("-b", "--broker URI (default: #{DEFAULT_BROKER_URI})") do |b|
             options[:broker] = URI.parse(b)
+          end
+
+          opts.on("-r", "--repos DIRECTORY (default: #{CukeQ.root})") do |dir|
+            options[:repos] = dir
           end
         end.parse!
 

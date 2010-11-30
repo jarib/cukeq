@@ -36,6 +36,16 @@ describe CukeQ::Slave do
       slave.broker.pass.should == 'cukeq123'
       slave.broker.vhost.should == '/cukeq'
     end
+
+    it "uses the given repo directory" do
+      CukeQ::ScenarioRunner.should_receive(:new).with("/tmp/foo")
+      CukeQ::Slave.configured_instance(%w[--repos /tmp/foo])
+    end
+
+    it "uses the default repo directory" do
+      slave = CukeQ::Slave.configured_instance
+      slave.scenario_runner.repos.should == CukeQ.root
+    end
   end
 
   describe ".execute" do
