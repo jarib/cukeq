@@ -86,7 +86,7 @@ module CukeQ
     end
 
     def ping(&blk)
-      log log_name, :ping
+      log self.class, :ping
       @broker.subscribe :pong, &blk
       @broker.publish   :ping, '{}'
     end
