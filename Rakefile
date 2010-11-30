@@ -15,6 +15,7 @@ begin
     g.add_dependency "thin"
     g.add_dependency "json"
     g.add_dependency "git"
+    g.add_dependency "nokogiri"
 
     g.add_development_dependency "rspec", ">= 2.0.0"
     g.add_development_dependency "yard", ">= 0"
