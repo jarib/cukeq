@@ -1,35 +1,9 @@
-require 'rubygems'
-require 'rake'
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |g|
-    g.name        = "cukeq"
-    g.summary     = %Q{Distributed cucumbers}
-    g.description = %Q{Cucumber features distributed using AMQP.}
-    g.email       = "jari.bakken@gmail.com"
-    g.homepage    = "http://github.com/jarib/cukeq"
-    g.authors     = ["Jari Bakken"]
-
-    g.add_dependency "amqp"
-    g.add_dependency "thin"
-    g.add_dependency "json"
-    g.add_dependency "git"
-    g.add_dependency "nokogiri"
-
-    g.add_development_dependency "rspec", ">= 2.0.0"
-    g.add_development_dependency "yard", ">= 0"
-    g.add_development_dependency "cucumber", ">= 0"
-    g.add_development_dependency "rack-test", ">= 0"
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
 require 'rspec/core/rake_task'
 
-task :default => ["spec:coverage", "spec:coverage:verify"]
+task :default => :spec
 
 RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = ["--color", "--format", "progress"]
@@ -46,13 +20,11 @@ namespace :spec do
   end
 end
 
-task :spec => :check_dependencies
-
 begin
   require 'cucumber/rake/task'
   Cucumber::Rake::Task.new(:features)
 
-  task :features => :check_dependencies
+  task :features
 rescue LoadError
   task :features do
     abort "Cucumber is not available. In order to run features, you must: sudo gem install cucumber"
