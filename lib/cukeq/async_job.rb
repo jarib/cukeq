@@ -40,7 +40,7 @@ module CukeQ
     end
 
     def command
-      "cucumber -rfeatures --format Cucumber::Formatter::Json --out #{output_file} #{@feature_file}"
+      "bundle install && bundle exec cucumber -rfeatures --format Cucumber::Formatter::Json --out #{output_file} #{@feature_file}"
     end
 
     def child_finished(stdout, stderr, status)

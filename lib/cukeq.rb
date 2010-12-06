@@ -16,12 +16,13 @@ require "cukeq/webapp"
 require "cukeq/scm"
 require "cukeq/scm/git_bridge"
 
-begin
-  require "cukeq/scm/svn_bridge"
-rescue LoadError
+# begin
+#   require "cukeq/scm/svn_bridge"
+# rescue LoadError
   require "cukeq/scm/shell_svn_bridge"
-end
+# end
 
+require "cukeq/async_job"
 require "cukeq/reporter"
 require "cukeq/scenario_exploder"
 require "cukeq/scenario_runner"
