@@ -28,7 +28,7 @@ module CukeQ
       url = job['scm']['url']
       rev = job['scm']['revision']
 
-      scm = Scm.new(@repos, url)
+      scm = Scm.new(url, @repos)
       unless scm.current_revision.to_s == rev.to_s
         # TODO(jari): this doesn't ensure that current_revision == rev - it
         # would also make sense to move the logic to Scm
