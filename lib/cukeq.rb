@@ -34,7 +34,7 @@ require "cukeq/runner"
 
 module CukeQ
   def self.identifier
-    @identifier ||= "#{Socket.gethostname}-#{Etc.getlogin}"
+    @identifier ||= "#{Socket.gethostname}-#{Etc.getlogin}-#{Process.pid}"
   end
 
   def self.root
