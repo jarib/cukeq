@@ -1,3 +1,3 @@
 module CukeQ
-  VERSION = "0.0.1.dev4"
+  VERSION = "0.0.1.dev5"
 end
